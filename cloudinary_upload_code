@@ -1,0 +1,53 @@
+import os
+import cloudinary
+import cloudinary.uploader
+from fastapi import FastAPI, File, UploadFile
+from fastapi.responses import JSONResponse
+from dotenv import load_dotenv
+from pathlib import Path
+import shutil
+
+load_dotenv()
+
+app = FastAPI()
+
+# Initialize cloudinary
+cloudinary.config(
+    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.getenv("CLOUDINARY_API_KEY"),
+    api_secret=os.getenv("CLOUDINARY_API_SECRET")
+)
+
+# Mode: "dev" = local, "prod" = cloudinary
+APP_MODE = os.getenv("APP_MODE", "dev")
+
+UPLOAD_DIR = Path("uploads")
+UPLOAD_DIR.mkdir(exist_ok=True)
+
+
+@app.post("/upload/")
+async def upload_image(file: UploadFile = File(...)):
+    if APP_MODE == "dev":
+        # Save to local uploads folder
+        file_path = UPLOAD_DIR / file.filename
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+        url = f"/static/{file.filename}"
+    else:
+        # Upload to cloudinary
+        upload_result = cloudinary.uploader.upload(file.file)
+        url = upload_result["secure_url"]
+
+    return {"url": url}
+
+
+@app.get("/images/")
+async def list_images():
+    if APP_MODE == "dev":
+        files = [f"/static/{f.name}" for f in UPLOAD_DIR.iterdir()]
+        return {"images": files}
+    else:
+        # Cloudinary: search resources (default folder)
+        resources = cloudinary.Search().expression("folder:").execute()
+        urls = [res["secure_url"] for res in resources["resources"]]
+        return {"images": urls}

@@ -1,0 +1,14 @@
+Fields
+    -Customer Details
+        - Customer name
+        - Customer Address
+        - Customer phone
+    - Booking Details
+        - Category (Bridal, Reception, Haldi, Party)
+        - Type (HD, Non-HD)
+        - Dates
+        - Rate
+    - Amount
+        - Total
+        - Discount
+        - Advance
