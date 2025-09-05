@@ -50,7 +50,7 @@ async def home_page(request: Request):
             "request": request,
             "title": "Booking, Gallery App API",
             "subtitle": "This API handles Booking, Gallery, and Contacts made with FastAPI",
-            "dashboard_app_url": settings.DASHBOARD_APP_URL,
+            "dashboard_app_url": settings.REACT_APP_URL,
             "api_docs": "/docs",
             "current_year": datetime.now().year,
         },
