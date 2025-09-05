@@ -1,6 +1,6 @@
 from cloudinary.utils import cloudinary_url  # type: ignore
 from ..schemas.gallery_schema import ImageResponse
-from ..schemas.booking_schema import Booking, BookingItemResponse, PaymentResponse
+from ..schemas.booking_schema import Booking
 from ..schemas.auth_schema import UserResponse
 from ..schemas.contact_schema import ContactResponse
 from ..utils.datetime_formatter import format_datetime

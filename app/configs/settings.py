@@ -6,8 +6,11 @@ class GeneralSettings(BaseSettings):
     TIMEZONE: str = "Asia/Kolkata"
     SECRET_KEY: str = os.environ.get("SECRET_KEY")
     ACCESS_TOKEN_EXPIRE_TIMEDELTA: str = os.environ.get("ACCESS_TOKEN_EXPIRE_TIMEDELTA")
-    REFRESH_TOKEN_EXPIRE_TIMEDELTA: str = os.environ.get("REFRESH_TOKEN_EXPIRE_TIMEDELTA")
+    REFRESH_TOKEN_EXPIRE_TIMEDELTA: str = os.environ.get(
+        "REFRESH_TOKEN_EXPIRE_TIMEDELTA"
+    )
     REACT_APP_URL: str = os.environ.get("REACT_APP_URL")
+    ALLOW_REGISTRATION: str = os.environ.get("ALLOW_REGISTRATION")
 
 
 class DatabaseSettings(BaseSettings):

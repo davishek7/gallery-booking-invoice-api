@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field, computed_field
 from enum import Enum
-from datetime import datetime, timezone
-from typing import List, Optional
+from datetime import datetime
+from typing import List
 
 
 class PaymentType(str, Enum):

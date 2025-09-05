@@ -1,6 +1,6 @@
 from fastapi import status
 from pydantic import EmailStr
-from bson import ObjectId
+from bson import ObjectId  # type: ignore
 from ..schemas.auth_schema import LoginSchema, RegisterSchma
 from ..utils.auth import hash_password, verify_password, generate_auth_tokens
 from ..exceptions.custom_exception import AppException

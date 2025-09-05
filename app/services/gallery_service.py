@@ -1,7 +1,6 @@
 from fastapi import status
-from datetime import datetime, timezone
 from bson import ObjectId  # type: ignore
-from ..configs.settings import settings
+from datetime import datetime
 from ..services.cloudinary_service import CloudinaryService
 from ..utils.serializers import serialize_image
 from ..utils.responses import success_response
@@ -14,21 +13,24 @@ class GalleryService:
         self.collection = collection
         self.cloudinary_service = cloudinary_service
 
-    async def create(self, category, file):
-        result = await self.cloudinary_service.upload(file)
+    async def create(self, category, files):
+        for file in files:
+            result = await self.cloudinary_service.upload(file)
 
-        photo_doc = {
-            "category": category,
-            "public_id": result["public_id"],
-            "folder": result["folder"],
-            "created_at": datetime.now(),
-        }
-        await self.collection.insert_one(photo_doc)
-        return success_response("Image upload successfully", status.HTTP_201_CREATED)
+            photo_doc = {
+                "category": category,
+                "public_id": result["public_id"],
+                "folder": result["folder"],
+                "created_at": datetime.now(),
+            }
+            await self.collection.insert_one(photo_doc)
+        return success_response("Images upload successfully", status.HTTP_201_CREATED)
 
-    async def get_list(self, category: ImageCategory = None):
+    async def get_list(self, limit: int, category: ImageCategory = None):
         query = {"category": category} if category is not None else {}
         cursor = self.collection.find(query).sort({"created_at": -1})
+        if limit > 0:
+            cursor = cursor.limit(limit)
         images = [serialize_image(doc) async for doc in cursor]
         if not images:
             return success_response("No image found", status.HTTP_200_OK, data=[])

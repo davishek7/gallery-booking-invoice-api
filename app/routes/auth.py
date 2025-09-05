@@ -3,6 +3,7 @@ from fastapi_jwt import JwtAuthorizationCredentials  # type: ignore
 from ..schemas.auth_schema import LoginSchema, RegisterSchma
 from ..configs.dependency import get_auth_service
 from ..utils.auth import access_security, refresh_security
+from ..configs.settings import settings
 
 
 router = APIRouter()
@@ -16,12 +17,14 @@ async def login(
     return await auth_service.login(login_schema)
 
 
-@router.post("/register")
-async def register(
-    register_schema: RegisterSchma,
-    auth_service=Depends(get_auth_service),
-):
-    return await auth_service.register(register_schema)
+if int(settings.ALLOW_REGISTRATION) == 1:
+
+    @router.post("/register")
+    async def register(
+        register_schema: RegisterSchma,
+        auth_service=Depends(get_auth_service),
+    ):
+        return await auth_service.register(register_schema)
 
 
 @router.post("/refresh")

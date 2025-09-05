@@ -1,8 +1,8 @@
-from fastapi import APIRouter, status, Depends, Security
+from fastapi import APIRouter, Depends, Security
 from fastapi_jwt import JwtAuthorizationCredentials  # type: ignore
 from ..configs.dependency import get_booking_service
 from ..schemas.booking_schema import BookingIn, Payment, BookingItem
-from ..utils.auth import access_security, refresh_security
+from ..utils.auth import access_security
 
 
 router = APIRouter()

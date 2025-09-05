@@ -1,4 +1,4 @@
-from fastapi import FastAPI, status, Request
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
 from .configs.context_manager import lifespan
@@ -12,7 +12,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from .configs.settings import settings
-from .listeners import send_email_listener
+from .listeners import send_email_listener  # noqa
 
 
 app = FastAPI(
