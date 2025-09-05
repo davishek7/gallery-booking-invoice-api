@@ -12,7 +12,7 @@ class RegisterSchma(BaseModel):
     email: EmailStr
     password: str
     is_active: bool = Field(default=True)
-    created_at: datetime = Field(default=datetime.now)
+    created_at: datetime = Field(default_factory=datetime.now)
 
 
 class UserResponse(BaseModel):
