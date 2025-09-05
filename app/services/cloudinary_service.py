@@ -1,5 +1,4 @@
 import cloudinary.uploader  # type: ignore
-from cloudinary.utils import cloudinary_url  # type: ignore
 from ..configs.settings import settings
 
 
@@ -11,9 +10,11 @@ class CloudinaryService:
         return cloudinary.uploader.upload(
             file.file,
             folder=settings.GALLERY_FOLDER_NAME,
+            width=1200,
+            crop="limit",
+            quality="auto:good",
             unique_filename=True,
         )
 
-    async def format_secure_url(self, public_id):
-        url, _ = cloudinary_url(public_id, secure=True)
-        return url
+    async def destroy(self, public_id):
+        return cloudinary.uploader.destroy(public_id, invalidate=True)

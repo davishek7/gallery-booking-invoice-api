@@ -1,10 +1,9 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, computed_field
 from enum import Enum
 from datetime import datetime, timezone
 from typing import List, Optional
 
 
-# --- Payment Enums ---
 class PaymentType(str, Enum):
     advance = "Advance"
     final = "Final"
@@ -17,7 +16,6 @@ class PaymentMethod(str, Enum):
     bank = "Bank"
 
 
-# --- Payment Model ---
 class Payment(BaseModel):
     amount: int
     method: PaymentMethod
@@ -25,7 +23,13 @@ class Payment(BaseModel):
     date: datetime = Field(default_factory=datetime.now)
 
 
-# --- Booking Items ---
+class PaymentResponse(BaseModel):
+    amount: int
+    method: PaymentMethod
+    payment_type: PaymentType
+    date: str
+
+
 class BookingItemType(str, Enum):
     hd = "HD"
     non_hd = "NON-HD"
@@ -45,7 +49,13 @@ class BookingItem(BaseModel):
     date: datetime
 
 
-# --- Customer Details ---
+class BookingItemResponse(BaseModel):
+    item_type: BookingItemType
+    item_category: BookingItemCategory
+    rate: int
+    date: str
+
+
 class CustomerDetails(BaseModel):
     name: str
     address: str
@@ -53,52 +63,47 @@ class CustomerDetails(BaseModel):
 
 
 class BookingIn(BaseModel):
-    item: List[BookingItem]
+    items: List[BookingItem]
     customer: CustomerDetails
     advance: int = 0
     discount: int = 0
     payments: List[Payment] = []
     created_at: datetime = Field(default_factory=datetime.now)
 
-# --- Booking ---
+
 class Booking(BaseModel):
     id: str
     booking_id: str
-    item: List[BookingItem]
-    customer: CustomerDetails
+    items: List[BookingItemResponse]
+    customer_name: str
+    customer_address: str
+    customer_phone_number: int
     advance: int
     discount: int
-    payments: List[Payment] = []
-    created_at: datetime
+    payments: List[PaymentResponse] = []
+    created_at: str
 
-    # def __init__(self, **data):
-    #     super().__init__(**data)
-
-    #     # if advance > 0, auto-create an advance payment
-    #     if self.advance > 0:
-    #         advance_payment = Payment(
-    #             amount=self.advance,
-    #             method=PaymentMethod.cash,   # default, or pass separately
-    #             payment_type=PaymentType.advance
-    #         )
-    #         self.payments.append(advance_payment)
-
+    @computed_field(return_type=int)
     @property
     def total_rate(self) -> int:
-        return sum(item.rate for item in self.item)
+        return sum(item.rate for item in self.items)
 
+    @computed_field(return_type=int)
     @property
     def final_amount(self) -> int:
         return self.total_rate - self.discount
 
+    @computed_field(return_type=int)
     @property
     def paid_amount(self) -> int:
         return sum(p.amount for p in self.payments)
 
+    @computed_field(return_type=int)
     @property
     def due_amount(self) -> int:
         return self.final_amount - self.paid_amount
-    
+
+    @computed_field(return_type=str)
     @property
     def payment_status(self) -> str:
         if self.paid_amount >= self.final_amount:

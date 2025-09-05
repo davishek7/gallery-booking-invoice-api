@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" class="h-100">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="" />
+    <meta name="author" content="Avishek Das" />
+    <title>{{title}}</title>
+    <!-- Favicon-->
+    <link rel="icon" type="image" href="{{url_for('static', path='/icon/logo.png')}}" />
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link href="{{url_for('static', path='css/styles.min.css')}}" rel="stylesheet" />
+</head>
+
+<body class="d-flex flex-column h-100">
+    <!-- Page content-->
+    <main class="flex-shrink-0">
+        <div class="container py-4 text-center">
+            <h1>{{title}}</h1>
+            <p class="lead">{{subtitle}}</p>
+            <div class="d-flex justify-content-center gap-3 mt-4">
+                <a href={{dashboard_app_url}} class="btn btn-danger" target="_blank">Dashboard</a>
+                <a href="/docs" class="btn btn-success" target="_blank">API Docs</a>
+            </div>
+        </div>
+    </main>
+    <footer class="footer mt-auto py-3 bg-dark">
+        <div class="container text-center">
+            <p class="m-0 text-center text-white">Copyright © Avishek Das {{current_year}}</p>
+        </div>
+    </footer>
+</body>
+
+</html>

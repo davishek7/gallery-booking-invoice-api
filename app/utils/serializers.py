@@ -1,9 +1,64 @@
-from cloudinary.utils import cloudinary_url
+from cloudinary.utils import cloudinary_url  # type: ignore
 from ..schemas.gallery_schema import ImageResponse
+from ..schemas.booking_schema import Booking, BookingItemResponse, PaymentResponse
+from ..schemas.auth_schema import UserResponse
+from ..schemas.contact_schema import ContactResponse
+from ..utils.datetime_formatter import format_datetime
 
 
 def serialize_image(image: dict) -> ImageResponse:
     image["id"] = str(image["_id"])
-    image["url"] = cloudinary_url(image["public_id"])[0]
+    image["thumb_url"] = cloudinary_url(
+        image["public_id"],
+        height=72,
+        crop="limit",  # keep aspect ratio, no stretching
+        quality="auto",
+    )[0]
+    image["url"] = cloudinary_url(
+        image["public_id"],
+        height=500,
+        crop="limit",  # keep aspect ratio, no stretching
+        quality="auto",
+    )[0]
+    image["created_at"] = format_datetime(image["created_at"])
     del image["_id"]
     return ImageResponse(**image)
+
+
+def serialize_booking(booking: dict) -> Booking:
+    booking["id"] = str(booking["_id"])
+    booking["created_at"] = format_datetime(booking["created_at"])
+    booking["customer_name"] = booking["customer"]["name"]
+    booking["customer_address"] = booking["customer"]["address"]
+    booking["customer_phone_number"] = booking["customer"]["phone_number"]
+    booking["items"] = [serialize_booking_item(item) for item in booking["items"]]
+    booking["payments"] = [
+        serialize_payment(payment) for payment in booking["payments"]
+    ]
+    del booking["_id"]
+    del booking["customer"]
+    return Booking(**booking)
+
+
+def serialize_payment(payment: dict) -> dict:
+    payment["date"] = format_datetime(payment["date"])
+    return payment
+
+
+def serialize_booking_item(item: dict) -> dict:
+    item["date"] = format_datetime(item["date"])
+    return item
+
+
+def serialize_user(user: dict) -> UserResponse:
+    user["id"] = str(user["_id"])
+    del user["_id"]
+    user["created_at"] = format_datetime(user["created_at"])
+    return UserResponse(**user)
+
+
+def serialize_contact(contact: dict) -> ContactResponse:
+    contact["id"] = str(contact["_id"])
+    contact["created_at"] = format_datetime(contact["created_at"])
+    del contact["_id"]
+    return ContactResponse(**contact)

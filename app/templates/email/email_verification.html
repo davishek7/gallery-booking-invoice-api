@@ -1,0 +1,12 @@
+{% extends 'email/base.html' %}
+{% block content %}
+<td style="padding: 20px; background-color: #ffffff; font-size: 16px; line-height: 1.6;">
+    <p>Hello {{ full_name }},</p>
+    <p>Thanks for signing up! Please confirm your email by clicking the button below:</p>
+    <p style="text-align: left;">
+        <a href="{{ url_with_token }}" style="background-color: #28A745; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-size: 16px;">
+            Verify Email
+        </a>
+    </p>
+</td>
+{% endblock %}

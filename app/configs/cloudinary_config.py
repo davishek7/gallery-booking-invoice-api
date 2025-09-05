@@ -1,4 +1,4 @@
-import cloudinary
+import cloudinary  # type: ignore
 from .settings import settings
 
 
