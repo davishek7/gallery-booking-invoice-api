@@ -4,10 +4,10 @@ from pydantic_settings import BaseSettings, SettingsConfigDict  # type: ignore
 
 class GeneralSettings(BaseSettings):
     TIMEZONE: str = "Asia/Kolkata"
-    SECRET_KEY: str = "Mh1A0qIy96Cztb27yRL_UfliYp1RKOactcSpI1Ojf8Y"
-    ACCESS_TOKEN_EXPIRE_TIMEDELTA: str = "30"
-    REFRESH_TOKEN_EXPIRE_TIMEDELTA: str = "7"
-    DASHBOARD_APP_URL: str = "http://localhost:5173"
+    SECRET_KEY: str = os.environ.get("SECRET_KEY")
+    ACCESS_TOKEN_EXPIRE_TIMEDELTA: str = os.environ.get("ACCESS_TOKEN_EXPIRE_TIMEDELTA")
+    REFRESH_TOKEN_EXPIRE_TIMEDELTA: str = os.environ.get("REFRESH_TOKEN_EXPIRE_TIMEDELTA")
+    REACT_APP_URL: str = os.environ.get("REACT_APP_URL")
 
 
 class DatabaseSettings(BaseSettings):

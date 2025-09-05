@@ -29,7 +29,7 @@ app = FastAPI(
 templates = Jinja2Templates(directory="app/templates")
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
-origins = ["http://localhost:5173", settings.DASHBOARD_APP_URL]
+origins = [settings.REACT_APP_URL]
 
 app.add_middleware(
     CORSMiddleware,
