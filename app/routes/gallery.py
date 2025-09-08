@@ -22,10 +22,11 @@ async def upload_image(
 @router.get("/")
 async def get_images(
     limit: int = Query(0, ge=0),
+    offset: int = Query(0, ge=0),
     category: ImageCategory = None,
     gallery_service=Depends(get_gallery_service),
 ):
-    return await gallery_service.get_list(limit, category)
+    return await gallery_service.get_list(limit, offset, category)
 
 
 @router.get("/{image_id}")

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Security
+from fastapi import APIRouter, Depends, Security, Query
 from fastapi_jwt import JwtAuthorizationCredentials  # type: ignore
 from ..configs.dependency import get_booking_service
 from ..schemas.booking_schema import BookingIn, Payment, BookingItem
@@ -19,10 +19,12 @@ async def create_booking(
 
 @router.get("/")
 async def get_bookings(
+    limit: int = Query(15, gt=0),
+    offset: int = Query(0, ge=0),
     booking_service=Depends(get_booking_service),
     credentials: JwtAuthorizationCredentials = Security(access_security),
 ):
-    return await booking_service.get_list()
+    return await booking_service.get_list(limit, offset)
 
 
 @router.get("/{booking_id}")

@@ -33,13 +33,22 @@ class ContactService:
             data={"contact_id": str(result.inserted_id)},
         )
 
-    async def get_list(self):
-        cursor = self.collection.find().sort({"created_at": -1})
+    async def get_list(self, limit: int, offset: int):
+        total = await self.collection.count_documents({})
+        cursor = (
+            self.collection.find().skip(offset).limit(limit).sort({"created_at": -1})
+        )
         contacts = [serialize_contact(doc) async for doc in cursor]
         if not contacts:
-            return success_response("No contacts found", status.HTTP_200_OK, data=[])
+            return success_response(
+                "No contacts found",
+                status.HTTP_200_OK,
+                data={"contacts": contacts, "limit": 0, "total": total},
+            )
         return success_response(
-            "Contacts fetched successfully", status.HTTP_200_OK, data=contacts
+            "Contacts fetched successfully",
+            status.HTTP_200_OK,
+            data={"contacts": contacts, "limit": limit, "total": total},
         )
 
     async def get(self, contact_id: str):

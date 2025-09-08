@@ -33,13 +33,22 @@ class BookingService:
             data={"booking_id": booking["booking_id"]},
         )
 
-    async def get_list(self):
-        cursor = self.collection.find().sort({"created_at": -1})
+    async def get_list(self, limit: int, offset: int):
+        total = await self.collection.count_documents({})
+        cursor = (
+            self.collection.find().sort({"created_at": -1}).skip(offset).limit(limit)
+        )
         bookings = [serialize_booking(booking) async for booking in cursor]
         if not bookings:
-            return success_response("No bookings found", status.HTTP_200_OK, data=[])
+            return success_response(
+                "No bookings found",
+                status.HTTP_200_OK,
+                data={"bookings": [], "limit": limit, "total": total},
+            )
         return success_response(
-            "Bookings fetched successfully", status.HTTP_200_OK, data=bookings
+            "Bookings fetched successfully",
+            status.HTTP_200_OK,
+            data={"bookings": bookings, "limit": limit, "total": total},
         )
 
     async def get(self, booking_id: str):

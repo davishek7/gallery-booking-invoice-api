@@ -26,16 +26,23 @@ class GalleryService:
             await self.collection.insert_one(photo_doc)
         return success_response("Images upload successfully", status.HTTP_201_CREATED)
 
-    async def get_list(self, limit: int, category: ImageCategory = None):
+    async def get_list(self, limit: int, offset: int, category: ImageCategory = None):
         query = {"category": category} if category is not None else {}
         cursor = self.collection.find(query).sort({"created_at": -1})
         if limit > 0:
-            cursor = cursor.limit(limit)
+            total = await self.collection.count_documents({"category": "gallery"})
+            cursor = cursor.skip(offset).limit(limit)
         images = [serialize_image(doc) async for doc in cursor]
         if not images:
-            return success_response("No image found", status.HTTP_200_OK, data=[])
+            return success_response(
+                "No image found",
+                status.HTTP_200_OK,
+                data={"images": [], "limit": 0, "total": total},
+            )
         return success_response(
-            "Images fetched successfully", status.HTTP_200_OK, data=images
+            "Images fetched successfully",
+            status.HTTP_200_OK,
+            data={"images": images, "limit": limit, "total": total},
         )
 
     async def get(self, image_id: str):
