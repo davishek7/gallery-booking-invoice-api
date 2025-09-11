@@ -9,7 +9,8 @@ class GeneralSettings(BaseSettings):
     REFRESH_TOKEN_EXPIRE_TIMEDELTA: str = os.environ.get(
         "REFRESH_TOKEN_EXPIRE_TIMEDELTA"
     )
-    REACT_APP_URL: str = os.environ.get("REACT_APP_URL")
+    FRONTEND_APP_URL: str = os.environ.get("FRONTEND_APP_URL")
+    ADMIN_APP_URL: str = os.environ.get("ADMIN_APP_URL")
     ALLOW_REGISTRATION: str = os.environ.get("ALLOW_REGISTRATION")
 
 

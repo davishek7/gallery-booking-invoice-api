@@ -24,6 +24,7 @@ class BookingService:
                 amount=booking["advance"],
                 method=PaymentMethod.upi,
                 payment_type=PaymentType.advance,
+                date=booking["advance_date"]
             )
             booking["payments"].append(payment.model_dump())
         await self.collection.insert_one(booking)

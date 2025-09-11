@@ -20,7 +20,7 @@ class Payment(BaseModel):
     amount: int
     method: PaymentMethod
     payment_type: PaymentType
-    date: datetime = Field(default_factory=datetime.now)
+    date: datetime
 
 
 class PaymentResponse(BaseModel):
@@ -66,6 +66,7 @@ class BookingIn(BaseModel):
     items: List[BookingItem]
     customer: CustomerDetails
     advance: int = 0
+    advance_date: datetime
     discount: int = 0
     payments: List[Payment] = []
     created_at: datetime = Field(default_factory=datetime.now)

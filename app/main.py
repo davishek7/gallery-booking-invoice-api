@@ -29,7 +29,7 @@ app = FastAPI(
 templates = Jinja2Templates(directory="app/templates")
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
-origins = [settings.REACT_APP_URL]
+origins = [settings.FRONTEND_APP_URL, settings.ADMIN_APP_URL]
 
 app.add_middleware(
     CORSMiddleware,
@@ -50,7 +50,7 @@ async def home_page(request: Request):
             "request": request,
             "title": "Booking, Gallery App API",
             "subtitle": "This API handles Booking, Gallery, and Contacts made with FastAPI",
-            "dashboard_app_url": settings.REACT_APP_URL,
+            "frontend_app_url": settings.FRONTEND_APP_URL,
             "api_docs": "/docs",
             "current_year": datetime.now().year,
         },
