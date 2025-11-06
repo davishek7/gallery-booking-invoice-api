@@ -3,6 +3,7 @@ from fastapi.exceptions import RequestValidationError, HTTPException
 from pymongo.errors import DuplicateKeyError  # type: ignore
 from ..utils.responses import error_response
 from .custom_exception import AppException
+from botocore.exceptions import NoCredentialsError
 
 
 def register_exception_handlers(app):
@@ -40,4 +41,12 @@ def register_exception_handlers(app):
     async def handle_duplicate_key_error(request: Request, exc: DuplicateKeyError):
         return error_response(
             "Email or username already exists", status.HTTP_400_BAD_REQUEST
+        )
+
+    @app.exception_handler(NoCredentialsError)
+    async def handle_filebase_credentials_error(
+        request: Request, exc: NoCredentialsError
+    ):
+        return error_response(
+            "Invalid Filebase credentials", status.HTTP_401_UNAUTHORIZED
         )

@@ -4,6 +4,7 @@ from ..schemas.booking_schema import Booking
 from ..schemas.auth_schema import UserResponse
 from ..schemas.contact_schema import ContactResponse
 from ..utils.datetime_formatter import format_datetime
+from supabase import Client
 
 
 def serialize_image(image: dict) -> ImageResponse:
@@ -25,7 +26,9 @@ def serialize_image(image: dict) -> ImageResponse:
     return ImageResponse(**image)
 
 
-def serialize_booking(booking: dict) -> Booking:
+def serialize_booking(
+    booking: dict, client: Client = None, bucket: str = None
+) -> Booking:
     booking["id"] = str(booking["_id"])
     booking["created_at"] = format_datetime(booking["created_at"])
     booking["customer_name"] = booking["customer"]["name"]
@@ -35,6 +38,17 @@ def serialize_booking(booking: dict) -> Booking:
     booking["payments"] = [
         serialize_payment(payment) for payment in booking["payments"]
     ]
+    if client and bucket:
+        booking["invoice_url"] = (
+            client.storage.from_(bucket).get_public_url(booking["invoice_file"])
+            if "invoice_file" in booking
+            else None
+        )
+        booking["download_url"] = (
+            f"{client.storage.from_(bucket).get_public_url(booking['invoice_file'])}?download={booking['invoice_file']}"
+            if "invoice_file" in booking
+            else None
+        )
     del booking["_id"]
     del booking["customer"]
     return Booking(**booking)

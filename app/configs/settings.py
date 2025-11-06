@@ -26,6 +26,12 @@ class CloudinarySettings(BaseSettings):
     GALLERY_FOLDER_NAME: str = os.environ.get("GALLERY_FOLDER_NAME")
 
 
+class SupabaseSettings(BaseSettings):
+    INVOICE_FOLDER_NAME: str = os.environ.get("INVOICE_FOLDER_NAME")
+    SUPABASE_KEY: str = os.environ.get("SUPABSE_KEY")
+    SUPABASE_URL: str = os.environ.get("SUPABASE_URL")
+
+
 class EmailSettings(BaseSettings):
     MAIL_RECEIVER: str = os.environ.get("MAIL_RECEIVER")
     MAIL_USERNAME: str = os.environ.get("MAIL_USERNAME")
@@ -40,7 +46,13 @@ class EmailSettings(BaseSettings):
     VALIDATE_CERTS: bool = os.environ.get("VALIDATE_CERTS")
 
 
-class Settings(DatabaseSettings, CloudinarySettings, EmailSettings, GeneralSettings):
+class Settings(
+    DatabaseSettings,
+    CloudinarySettings,
+    EmailSettings,
+    GeneralSettings,
+    SupabaseSettings,
+):
     model_config = SettingsConfigDict(env_file=".env")
 
 

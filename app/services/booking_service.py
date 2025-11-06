@@ -1,4 +1,4 @@
-from fastapi import status
+from fastapi import status, Depends
 from ..schemas.booking_schema import (
     BookingIn,
     Payment,
@@ -10,11 +10,13 @@ from ..utils.random_id import generate_booking_id
 from ..utils.serializers import serialize_booking
 from ..utils.responses import success_response
 from ..exceptions.custom_exception import AppException
+from .supabase_service import SupabaseService
 
 
 class BookingService:
-    def __init__(self, collection):
+    def __init__(self, collection, supabase_service: SupabaseService):
         self.collection = collection
+        self.supabase_service = supabase_service
 
     async def create(self, booking_schema: BookingIn):
         booking = booking_schema.model_dump()
@@ -24,7 +26,7 @@ class BookingService:
                 amount=booking["advance"],
                 method=PaymentMethod.upi,
                 payment_type=PaymentType.advance,
-                date=booking["advance_date"]
+                date=booking["advance_date"],
             )
             booking["payments"].append(payment.model_dump())
         await self.collection.insert_one(booking)
@@ -39,7 +41,12 @@ class BookingService:
         cursor = (
             self.collection.find().sort({"created_at": -1}).skip(offset).limit(limit)
         )
-        bookings = [serialize_booking(booking) async for booking in cursor]
+        bookings = [
+            serialize_booking(
+                booking, self.supabase_service.client, self.supabase_service.bucket
+            )
+            async for booking in cursor
+        ]
         if not bookings:
             return success_response(
                 "No bookings found",
@@ -59,7 +66,9 @@ class BookingService:
         return success_response(
             "Booking fetched successfully",
             status.HTTP_200_OK,
-            data=serialize_booking(booking),
+            data=serialize_booking(
+                booking, self.supabase_service.client, self.supabase_service.bucket
+            ),
         )
 
     async def add_payment(self, booking_id: str, payment_schema: Payment):
@@ -88,3 +97,6 @@ class BookingService:
             raise AppException("Booking not found", status.HTTP_404_NOT_FOUND)
         await self.collection.delete_one({"booking_id": booking_id})
         return success_response("Booking deleted successfully", status.HTTP_200_OK)
+
+    async def upload_invoice(self, booking_id, file):
+        return await self.supabase_service.upload_invoice(booking_id, file)

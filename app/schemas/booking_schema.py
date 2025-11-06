@@ -82,6 +82,8 @@ class Booking(BaseModel):
     advance: int
     discount: int
     payments: List[PaymentResponse] = []
+    invoice_url: str | None = None
+    download_url: str | None = None
     created_at: str
 
     @computed_field(return_type=int)

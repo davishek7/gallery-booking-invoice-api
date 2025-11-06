@@ -1,4 +1,5 @@
-import cloudinary.uploader  # type: ignore
+import cloudinary.uploader
+from cloudinary.utils import cloudinary_url
 from ..configs.settings import settings
 
 
