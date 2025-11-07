@@ -43,6 +43,7 @@ register_exception_handlers(app)
 
 
 @app.get("/", response_class=HTMLResponse, include_in_schema=False)
+@app.head("/", include_in_schema=False)
 async def home_page(request: Request):
     return templates.TemplateResponse(
         "index.html",
