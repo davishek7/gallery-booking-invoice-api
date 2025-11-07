@@ -16,11 +16,13 @@ class AdminStatService:
 
         bookings_cursor = self.booking_collection.find()
         bookings_total_revenue = 0
+        booking_total_received = 0
         bookings_total_due = 0
 
         async for doc in bookings_cursor:
             booking = serialize_booking(doc)
-            bookings_total_revenue += booking.paid_amount
+            bookings_total_revenue += booking.final_amount
+            booking_total_received += booking.paid_amount
             bookings_total_due += booking.due_amount
 
         data = {
@@ -28,6 +30,7 @@ class AdminStatService:
             "total_bookings": total_bookings,
             "total_contacts": total_contacts,
             "total_revenue": bookings_total_revenue,
+            "total_received": booking_total_received,
             "total_due": bookings_total_due,
         }
 
