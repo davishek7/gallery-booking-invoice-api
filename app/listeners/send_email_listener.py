@@ -8,5 +8,4 @@ def handle_send_mail(
     sender, subject: str, recipients: list, template_name: str, context: dict = None
 ):
     """Runs the email sending task in the background."""
-    print("here")
     asyncio.create_task(send_email_async(subject, recipients, template_name, context))

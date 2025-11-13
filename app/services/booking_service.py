@@ -11,6 +11,7 @@ from ..utils.serializers import serialize_booking
 from ..utils.responses import success_response
 from ..exceptions.custom_exception import AppException
 from .supabase_service import SupabaseService
+from ..utils.aggregate_pipelines import sort_bookings_by_event_date
 
 
 class BookingService:
@@ -38,9 +39,8 @@ class BookingService:
 
     async def get_list(self, limit: int, offset: int):
         total = await self.collection.count_documents({})
-        cursor = (
-            self.collection.find().sort({"created_at": -1}).skip(offset).limit(limit)
-        )
+        pipeline = sort_bookings_by_event_date(skip=offset, limit=limit)
+        cursor = await self.collection.aggregate(pipeline)
         bookings = [
             serialize_booking(
                 booking, self.supabase_service.client, self.supabase_service.bucket
