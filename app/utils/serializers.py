@@ -34,7 +34,9 @@ def serialize_booking(
     booking["customer_name"] = booking["customer"]["name"]
     booking["customer_address"] = booking["customer"]["address"]
     booking["customer_phone_number"] = booking["customer"]["phone_number"]
+    booking["items"].sort(key=lambda item: item["date"])
     booking["items"] = [serialize_booking_item(item) for item in booking["items"]]
+    booking["payments"].sort(key=lambda payment: payment["date"])
     booking["payments"] = [
         serialize_payment(payment) for payment in booking["payments"]
     ]

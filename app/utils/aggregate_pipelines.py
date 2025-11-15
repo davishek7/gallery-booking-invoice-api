@@ -9,8 +9,11 @@ def sort_bookings_by_event_date(skip: int, limit: int):
             }
         },
         {
-            "$sort": {"sortDate": 1}  # nearest upcoming first
+            "$addFields": {
+                "isCompleted": {"$cond": [{"$lt": ["$sortDate", datetime.now()]}, 1, 0]}
+            }
         },
+        {"$sort": {"isCompleted": 1, "sortDate": 1}},
         {"$skip": skip},
         {"$limit": limit},
     ]

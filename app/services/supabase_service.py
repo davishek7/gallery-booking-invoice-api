@@ -37,10 +37,6 @@ class SupabaseService:
             {"booking_id": booking_id}
         )
 
-        return success_response(
-            message="Invoice uploaded successfully",
-            status_code=status.HTTP_201_CREATED,
-            data=serialize_booking(
-                updated_booking, client=self.client, bucket=self.bucket
-            ),
+        return serialize_booking(
+            updated_booking, client=self.client, bucket=self.bucket
         )

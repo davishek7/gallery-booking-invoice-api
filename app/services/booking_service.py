@@ -99,4 +99,9 @@ class BookingService:
         return success_response("Booking deleted successfully", status.HTTP_200_OK)
 
     async def upload_invoice(self, booking_id, file):
-        return await self.supabase_service.upload_invoice(booking_id, file)
+        data = await self.supabase_service.upload_invoice(booking_id, file)
+        return success_response(
+            message="Invoice uploaded successfully",
+            status_code=status.HTTP_201_CREATED,
+            data=data,
+        )

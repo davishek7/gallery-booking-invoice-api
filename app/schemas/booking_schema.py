@@ -115,3 +115,8 @@ class Booking(BaseModel):
             return "Partially Paid"
         else:
             return "Unpaid"
+
+    @computed_field(return_type=str)
+    @property
+    def earliest_booking_item(self) -> str:
+        return self.items[0].date  # as the items are already sorted in the serializer
