@@ -11,13 +11,14 @@ from ..utils.serializers import serialize_booking
 from ..utils.responses import success_response
 from ..exceptions.custom_exception import AppException
 from .supabase_service import SupabaseService
+from .r2_service import R2Service
 from ..utils.aggregate_pipelines import sort_bookings_by_event_date
 
 
 class BookingService:
-    def __init__(self, collection, supabase_service: SupabaseService):
+    def __init__(self, collection, r2_service: R2Service):
         self.collection = collection
-        self.supabase_service = supabase_service
+        self.r2_service = r2_service
 
     async def create(self, booking_schema: BookingIn):
         booking = booking_schema.model_dump()
@@ -42,9 +43,7 @@ class BookingService:
         pipeline = sort_bookings_by_event_date(skip=offset, limit=limit)
         cursor = await self.collection.aggregate(pipeline)
         bookings = [
-            serialize_booking(
-                booking, self.supabase_service.client, self.supabase_service.bucket
-            )
+            serialize_booking(booking, self.r2_service.client, self.r2_service.bucket)
             async for booking in cursor
         ]
         if not bookings:
@@ -67,7 +66,7 @@ class BookingService:
             "Booking fetched successfully",
             status.HTTP_200_OK,
             data=serialize_booking(
-                booking, self.supabase_service.client, self.supabase_service.bucket
+                booking, self.r2_service.client, self.r2_service.bucket
             ),
         )
 
@@ -99,7 +98,7 @@ class BookingService:
         return success_response("Booking deleted successfully", status.HTTP_200_OK)
 
     async def upload_invoice(self, booking_id, file):
-        data = await self.supabase_service.upload_invoice(booking_id, file)
+        data = await self.r2_service.upload_invoice(booking_id, file)
         return success_response(
             message="Invoice uploaded successfully",
             status_code=status.HTTP_201_CREATED,

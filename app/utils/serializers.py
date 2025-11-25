@@ -26,9 +26,7 @@ def serialize_image(image: dict) -> ImageResponse:
     return ImageResponse(**image)
 
 
-def serialize_booking(
-    booking: dict, client: Client = None, bucket: str = None
-) -> Booking:
+def serialize_booking(booking: dict, client=None, bucket=None) -> Booking:
     booking["id"] = str(booking["_id"])
     booking["created_at"] = format_datetime(booking["created_at"])
     booking["customer_name"] = booking["customer"]["name"]
@@ -42,15 +40,20 @@ def serialize_booking(
     ]
     if client and bucket:
         booking["invoice_url"] = (
-            client.storage.from_(bucket).get_public_url(booking["invoice_file"])
+            client.generate_presigned_url(
+                ClientMethod="get_object",
+                Params={"Bucket": bucket, "Key": booking["invoice_file"]},
+                ExpiresIn=1800,
+            )
             if "invoice_file" in booking
             else None
         )
         booking["download_url"] = (
-            f"{client.storage.from_(bucket).get_public_url(booking['invoice_file'])}?download={booking['invoice_file']}"
+            f"{client.generate_presigned_url(ClientMethod='get_object', Params={'Bucket': bucket, 'Key': booking['invoice_file']}, ExpiresIn=1800)}?download={booking['invoice_file']}"
             if "invoice_file" in booking
             else None
         )
+
     del booking["_id"]
     del booking["customer"]
     return Booking(**booking)

@@ -6,10 +6,16 @@ from ..services.auth_service import AuthService
 from ..services.contact_service import ContactService
 from ..services.admin_stat_service import AdminStatService
 from ..services.supabase_service import SupabaseService
+from ..services.r2_service import R2Service
 
 
 async def get_cloudinary_service() -> CloudinaryService:
     return CloudinaryService()
+
+
+async def get_r2_service() -> R2Service:
+    db = get_db()
+    return R2Service(db["booking"])
 
 
 async def get_supabase_service() -> SupabaseService:
@@ -25,8 +31,8 @@ async def get_gallery_service() -> GalleryService:
 
 async def get_booking_service() -> BookingService:
     db = get_db()
-    supabase_service = await get_supabase_service()
-    return BookingService(db["booking"], supabase_service)
+    r2_service = await get_r2_service()
+    return BookingService(db["booking"], r2_service)
 
 
 async def get_auth_service() -> AuthService:

@@ -32,6 +32,12 @@ class SupabaseSettings(BaseSettings):
     SUPABASE_URL: str = os.environ.get("SUPABASE_URL")
 
 
+class CloudflareR2Settings(BaseSettings):
+    R2_ACCESS_KEY_ID: str = os.environ.get("R2_ACCESS_KEY_ID")
+    R2_SECRET_ACCESS_KEY: str = os.environ.get("R2_SECRET_ACCESS_KEY")
+    R2_ENDPOINT_URL: str = os.environ.get("R2_ENDPOINT_URL")
+
+
 class EmailSettings(BaseSettings):
     MAIL_RECEIVER: str = os.environ.get("MAIL_RECEIVER")
     MAIL_USERNAME: str = os.environ.get("MAIL_USERNAME")
@@ -52,6 +58,7 @@ class Settings(
     EmailSettings,
     GeneralSettings,
     SupabaseSettings,
+    CloudflareR2Settings,
 ):
     model_config = SettingsConfigDict(env_file=".env")
 
