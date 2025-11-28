@@ -23,11 +23,9 @@ class CloudinarySettings(BaseSettings):
     CLOUD_NAME: str = os.environ.get("CLOUD_NAME")
     API_KEY: str = os.environ.get("API_KEY")
     API_SECRET: str = os.environ.get("API_SECRET")
-    GALLERY_FOLDER_NAME: str = os.environ.get("GALLERY_FOLDER_NAME")
 
 
 class SupabaseSettings(BaseSettings):
-    INVOICE_FOLDER_NAME: str = os.environ.get("INVOICE_FOLDER_NAME")
     SUPABASE_KEY: str = os.environ.get("SUPABSE_KEY")
     SUPABASE_URL: str = os.environ.get("SUPABASE_URL")
 
@@ -36,6 +34,11 @@ class CloudflareR2Settings(BaseSettings):
     R2_ACCESS_KEY_ID: str = os.environ.get("R2_ACCESS_KEY_ID")
     R2_SECRET_ACCESS_KEY: str = os.environ.get("R2_SECRET_ACCESS_KEY")
     R2_ENDPOINT_URL: str = os.environ.get("R2_ENDPOINT_URL")
+
+
+class MediaStorageSettings(BaseSettings):
+    GALLERY_FOLDER_NAME: str = os.environ.get("GALLERY_FOLDER_NAME")
+    INVOICE_FOLDER_NAME: str = os.environ.get("INVOICE_FOLDER_NAME")
 
 
 class EmailSettings(BaseSettings):
@@ -59,6 +62,7 @@ class Settings(
     GeneralSettings,
     SupabaseSettings,
     CloudflareR2Settings,
+    MediaStorageSettings,
 ):
     model_config = SettingsConfigDict(env_file=".env")
 

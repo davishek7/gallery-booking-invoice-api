@@ -31,8 +31,8 @@ async def get_gallery_service() -> GalleryService:
 
 async def get_booking_service() -> BookingService:
     db = get_db()
-    r2_service = await get_r2_service()
-    return BookingService(db["booking"], r2_service)
+    invoice_service = await get_r2_service()
+    return BookingService(db["booking"], invoice_service)
 
 
 async def get_auth_service() -> AuthService:

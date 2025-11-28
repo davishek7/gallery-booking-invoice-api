@@ -1,4 +1,5 @@
 from fastapi import status, Depends
+from fastapi.responses import StreamingResponse
 from ..schemas.booking_schema import (
     BookingIn,
     Payment,
@@ -10,15 +11,13 @@ from ..utils.random_id import generate_booking_id
 from ..utils.serializers import serialize_booking
 from ..utils.responses import success_response
 from ..exceptions.custom_exception import AppException
-from .supabase_service import SupabaseService
-from .r2_service import R2Service
 from ..utils.aggregate_pipelines import sort_bookings_by_event_date
 
 
 class BookingService:
-    def __init__(self, collection, r2_service: R2Service):
+    def __init__(self, collection, invoice_service):
         self.collection = collection
-        self.r2_service = r2_service
+        self.invoice_service = invoice_service
 
     async def create(self, booking_schema: BookingIn):
         booking = booking_schema.model_dump()
@@ -43,7 +42,7 @@ class BookingService:
         pipeline = sort_bookings_by_event_date(skip=offset, limit=limit)
         cursor = await self.collection.aggregate(pipeline)
         bookings = [
-            serialize_booking(booking, self.r2_service.client, self.r2_service.bucket)
+            serialize_booking(booking, self.invoice_service.get_presigned_url)
             async for booking in cursor
         ]
         if not bookings:
@@ -65,9 +64,7 @@ class BookingService:
         return success_response(
             "Booking fetched successfully",
             status.HTTP_200_OK,
-            data=serialize_booking(
-                booking, self.r2_service.client, self.r2_service.bucket
-            ),
+            data=serialize_booking(booking, self.invoice_service.get_presigned_url),
         )
 
     async def add_payment(self, booking_id: str, payment_schema: Payment):
@@ -98,9 +95,19 @@ class BookingService:
         return success_response("Booking deleted successfully", status.HTTP_200_OK)
 
     async def upload_invoice(self, booking_id, file):
-        data = await self.r2_service.upload_invoice(booking_id, file)
+        data = await self.invoice_service.upload_invoice(booking_id, file)
         return success_response(
             message="Invoice uploaded successfully",
             status_code=status.HTTP_201_CREATED,
             data=data,
+        )
+
+    async def download_invoice(self, booking_id):
+        result = await self.invoice_service.download_invoice(booking_id)
+        return StreamingResponse(
+            result["r2_file"].iter_content(chunk_size=1024),
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f'attachment; filename="{result["filename"]}"'
+            },
         )

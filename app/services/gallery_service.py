@@ -12,10 +12,18 @@ class GalleryService:
     def __init__(self, collection, cloudinary_service: CloudinaryService):
         self.collection = collection
         self.cloudinary_service = cloudinary_service
+        self.MAX_SIZE = 10 * 1024 * 1024  # 10MB
 
     async def create(self, category, files):
         for file in files:
-            result = await self.cloudinary_service.upload(file)
+            content = await file.read()
+            file_size = len(content)
+            if file_size > self.MAX_SIZE:
+                return AppException(
+                    "File size too large (>10MB)", status.HTTP_400_BAD_REQUEST
+                )
+
+            result = await self.cloudinary_service.upload(content)
 
             photo_doc = {
                 "category": category,

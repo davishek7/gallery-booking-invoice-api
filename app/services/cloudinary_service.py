@@ -9,7 +9,7 @@ class CloudinaryService:
 
     async def upload(self, file):
         return cloudinary.uploader.upload(
-            file.file,
+            file,
             folder=settings.GALLERY_FOLDER_NAME,
             width=1200,
             crop="limit",

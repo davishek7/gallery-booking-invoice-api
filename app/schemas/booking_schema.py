@@ -68,6 +68,7 @@ class BookingIn(BaseModel):
     advance: int = 0
     advance_date: datetime
     discount: int = 0
+    expenses: int = 0
     payments: List[Payment] = []
     created_at: datetime = Field(default_factory=datetime.now)
 
@@ -81,9 +82,9 @@ class Booking(BaseModel):
     customer_phone_number: int
     advance: int
     discount: int
+    expenses: int = 0
     payments: List[PaymentResponse] = []
     invoice_url: str | None = None
-    download_url: str | None = None
     created_at: str
 
     @computed_field(return_type=int)
@@ -94,7 +95,8 @@ class Booking(BaseModel):
     @computed_field(return_type=int)
     @property
     def final_amount(self) -> int:
-        return self.total_rate - self.discount
+        final = self.total_rate - self.discount
+        return final - self.expenses if self.expenses else final
 
     @computed_field(return_type=int)
     @property

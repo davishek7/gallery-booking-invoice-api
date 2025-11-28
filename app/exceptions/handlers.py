@@ -1,6 +1,7 @@
 from fastapi import Request, status
 from fastapi.exceptions import RequestValidationError, HTTPException
-from pymongo.errors import DuplicateKeyError  # type: ignore
+from pymongo.errors import DuplicateKeyError
+from cloudinary.exceptions import Error as CloudinaryError
 from ..utils.responses import error_response
 from .custom_exception import AppException
 
@@ -40,4 +41,11 @@ def register_exception_handlers(app):
     async def handle_duplicate_key_error(request: Request, exc: DuplicateKeyError):
         return error_response(
             "Email or username already exists", status.HTTP_400_BAD_REQUEST
+        )
+
+    @app.exception_handler(CloudinaryError)
+    async def handle_cloudinary_errors(request: Request, exc: CloudinaryError):
+        print(exc.http_code)
+        return error_response(
+            f"Cloudinary Exception: {str(exc)}",
         )

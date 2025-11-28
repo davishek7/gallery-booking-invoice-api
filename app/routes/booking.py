@@ -70,6 +70,14 @@ async def upload_invoice(
     file: UploadFile = File(...),
     booking_id: str = Form(...),
     booking_service=Depends(get_booking_service),
-    # credentials: JwtAuthorizationCredentials = Security(access_security)
+    credentials: JwtAuthorizationCredentials = Security(access_security),
 ):
     return await booking_service.upload_invoice(booking_id, file)
+
+
+@router.get("/download-invoice/{booking_id}")
+async def download_invoice(
+    booking_id: str,
+    booking_service=Depends(get_booking_service)
+):
+    return await booking_service.download_invoice(booking_id)
