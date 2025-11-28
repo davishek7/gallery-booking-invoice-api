@@ -42,8 +42,8 @@ class R2Service:
             ContentType=file.content_type,
         )
 
-        if "invoice_file" not in booking:
-            await self.booking_collection.update_one(
+        # if "invoice_file" not in booking:
+        await self.booking_collection.update_one(
                 {"booking_id": booking_id}, {"$set": {"invoice_file": file.filename}}
             )
 
