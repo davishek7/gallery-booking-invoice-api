@@ -77,7 +77,11 @@ async def upload_invoice(
 
 @router.get("/download-invoice/{booking_id}")
 async def download_invoice(
-    booking_id: str,
-    booking_service=Depends(get_booking_service)
+    booking_id: str, booking_service=Depends(get_booking_service)
 ):
     return await booking_service.download_invoice(booking_id)
+
+
+@router.get("/booking-id/list")
+async def get_booking_id_list(booking_service=Depends(get_booking_service)):
+    return await booking_service.booking_id_list()

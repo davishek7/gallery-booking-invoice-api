@@ -68,22 +68,17 @@ class BookingIn(BaseModel):
     advance: int = 0
     advance_date: datetime
     discount: int = 0
-    expenses: int = 0
     payments: List[Payment] = []
     created_at: datetime = Field(default_factory=datetime.now)
 
 
-class Booking(BaseModel):
+class BookingList(BaseModel):
     id: str
     booking_id: str
     items: List[BookingItemResponse]
     customer_name: str
-    customer_address: str
-    customer_phone_number: int
-    advance: int
-    discount: int
-    expenses: int = 0
     payments: List[PaymentResponse] = []
+    discount: int
     invoice_url: str | None = None
     created_at: str
 
@@ -95,8 +90,52 @@ class Booking(BaseModel):
     @computed_field(return_type=int)
     @property
     def final_amount(self) -> int:
-        final = self.total_rate - self.discount
-        return final - self.expenses if self.expenses else final
+        return self.total_rate - self.discount
+
+    @computed_field(return_type=int)
+    @property
+    def paid_amount(self) -> int:
+        return sum(p.amount for p in self.payments)
+
+    @computed_field(return_type=str)
+    @property
+    def payment_status(self) -> str:
+        if self.paid_amount >= self.final_amount:
+            return "Fully Paid"
+        elif self.paid_amount > 0:
+            return "Partially Paid"
+        else:
+            return "Unpaid"
+
+    @computed_field(return_type=str)
+    @property
+    def earliest_booking_item(self) -> str:
+        return self.items[0].date  # as the items are already sorted in the serializer
+
+
+class BookingResponse(BaseModel):
+    id: str
+    booking_id: str
+    items: List[BookingItemResponse]
+    customer_name: str
+    customer_address: str
+    customer_phone_number: int
+    advance: int
+    discount: int
+    payments: List[PaymentResponse] = []
+    total_expense: int = 0
+    invoice_url: str | None = None
+    created_at: str
+
+    @computed_field(return_type=int)
+    @property
+    def total_rate(self) -> int:
+        return sum(item.rate for item in self.items)
+
+    @computed_field(return_type=int)
+    @property
+    def final_amount(self) -> int:
+        return self.total_rate - self.discount
 
     @computed_field(return_type=int)
     @property
@@ -122,3 +161,8 @@ class Booking(BaseModel):
     @property
     def earliest_booking_item(self) -> str:
         return self.items[0].date  # as the items are already sorted in the serializer
+
+    @computed_field(return_type=int)
+    @property
+    def total_revenue(self) -> int:
+        return self.final_amount - self.total_expense

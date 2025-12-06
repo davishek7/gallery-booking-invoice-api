@@ -25,7 +25,7 @@ class R2Service:
         return self.client.generate_presigned_url(
             ClientMethod="get_object",
             Params={"Bucket": self.bucket, "Key": filename},
-            ExpiresIn=1800,
+            ExpiresIn=43200,
         )
 
     async def upload_invoice(self, booking_id, file):
@@ -40,12 +40,13 @@ class R2Service:
             Key=file.filename,
             Body=content,
             ContentType=file.content_type,
+            ContentDisposition=f'attachment; filename="{file.filename}"',
         )
 
         # if "invoice_file" not in booking:
         await self.booking_collection.update_one(
-                {"booking_id": booking_id}, {"$set": {"invoice_file": file.filename}}
-            )
+            {"booking_id": booking_id}, {"$set": {"invoice_file": file.filename}}
+        )
 
         updated_booking = await self.booking_collection.find_one(
             {"booking_id": booking_id}

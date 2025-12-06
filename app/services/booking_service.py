@@ -8,15 +8,20 @@ from ..schemas.booking_schema import (
     PaymentType,
 )
 from ..utils.random_id import generate_booking_id
-from ..utils.serializers import serialize_booking
+from ..utils.serializers import (
+    serialize_booking_list,
+    serialize_booking,
+    serialize_expense,
+)
 from ..utils.responses import success_response
 from ..exceptions.custom_exception import AppException
 from ..utils.aggregate_pipelines import sort_bookings_by_event_date
 
 
 class BookingService:
-    def __init__(self, collection, invoice_service):
+    def __init__(self, collection, expense_collection, invoice_service):
         self.collection = collection
+        self.expense_collection = expense_collection
         self.invoice_service = invoice_service
 
     async def create(self, booking_schema: BookingIn):
@@ -42,7 +47,7 @@ class BookingService:
         pipeline = sort_bookings_by_event_date(skip=offset, limit=limit)
         cursor = await self.collection.aggregate(pipeline)
         bookings = [
-            serialize_booking(booking, self.invoice_service.get_presigned_url)
+            serialize_booking_list(booking, self.invoice_service.get_presigned_url)
             async for booking in cursor
         ]
         if not bookings:
@@ -61,10 +66,28 @@ class BookingService:
         booking = await self.collection.find_one({"booking_id": booking_id})
         if not booking:
             raise AppException("Booking not found", status.HTTP_404_NOT_FOUND)
+
+        total_expenses_count = await self.expense_collection.count_documents(
+            {"booking_id": booking["booking_id"]}
+        )
+
+        expense_cursor = self.expense_collection.find(
+            {"booking_id": booking["booking_id"]}
+        )
+
+        expenses = [serialize_expense(doc) async for doc in expense_cursor]
+
+        total_expense = sum(_.amount for _ in expenses)
+
         return success_response(
             "Booking fetched successfully",
             status.HTTP_200_OK,
-            data=serialize_booking(booking, self.invoice_service.get_presigned_url),
+            data={
+                "booking": serialize_booking(
+                    booking, total_expense, self.invoice_service.get_presigned_url
+                ),
+                "expenses": expenses,
+            },
         )
 
     async def add_payment(self, booking_id: str, payment_schema: Payment):
@@ -110,4 +133,16 @@ class BookingService:
             headers={
                 "Content-Disposition": f'attachment; filename="{result["filename"]}"'
             },
+        )
+
+    async def booking_id_list(self):
+        cursor = self.collection.find(
+            {}, {"booking_id": 1, "customer.name": 1, "_id": 0}
+        ).sort("created_at", -1)
+        bookings = [
+            {"booking_id": doc["booking_id"], "customer_name": doc["customer"]["name"]}
+            async for doc in cursor
+        ]
+        return success_response(
+            "Booking IDs fetched successfully", status.HTTP_200_OK, data=bookings
         )
