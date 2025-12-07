@@ -42,7 +42,7 @@ def serialize_booking_list(
         serialize_payment(payment) for payment in booking["payments"]
     ]
     booking["total_expense"] = total_expense
-    # booking["total_revenue"] = booking
+
     if get_presigned_url:
         booking["invoice_url"] = (
             get_presigned_url(booking["invoice_file"])
@@ -70,7 +70,7 @@ def serialize_booking(
         serialize_payment(payment) for payment in booking["payments"]
     ]
     booking["total_expense"] = total_expense
-    # booking["total_revenue"] = booking
+
     if get_presigned_url:
         booking["invoice_url"] = (
             get_presigned_url(booking["invoice_file"])

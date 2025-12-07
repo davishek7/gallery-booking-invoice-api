@@ -48,7 +48,9 @@ class ExpenseService:
 
     async def update(self, expense_schema: ExpenseUpdate):
         updated_expense = expense_schema.model_dump()
-        expense = await self.collection.find_one({"_id": ObjectId(updated_expense["id"])})
+        expense = await self.collection.find_one(
+            {"_id": ObjectId(updated_expense["id"])}
+        )
 
         if not expense:
             raise AppException("Expense not found.", status.HTTP_404_NOT_FOUND)

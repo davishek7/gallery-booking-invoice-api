@@ -29,9 +29,7 @@ class R2Service:
         )
 
     async def upload_invoice(self, booking_id, file):
-        booking = await get_object_or_404(
-            self.booking_collection, {"booking_id": booking_id}
-        )
+        await get_object_or_404(self.booking_collection, {"booking_id": booking_id})
 
         content = await file.read()
 
@@ -43,7 +41,6 @@ class R2Service:
             ContentDisposition=f'attachment; filename="{file.filename}"',
         )
 
-        # if "invoice_file" not in booking:
         await self.booking_collection.update_one(
             {"booking_id": booking_id}, {"$set": {"invoice_file": file.filename}}
         )
@@ -52,7 +49,7 @@ class R2Service:
             {"booking_id": booking_id}
         )
 
-        return serialize_booking(updated_booking, self.get_presigned_url)
+        return serialize_booking(updated_booking, 0, self.get_presigned_url)
 
     async def download_invoice(self, booking_id):
         booking = await get_object_or_404(
