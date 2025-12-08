@@ -43,12 +43,12 @@ def serialize_booking_list(
     ]
     booking["total_expense"] = total_expense
 
-    if get_presigned_url:
-        booking["invoice_url"] = (
-            get_presigned_url(booking["invoice_file"])
-            if "invoice_file" in booking
-            else None
-        )
+    # if get_presigned_url:
+    #     booking["invoice_url"] = (
+    #         get_presigned_url(booking["invoice_file"])
+    #         if "invoice_file" in booking
+    #         else None
+    #     )
 
     del booking["_id"]
     del booking["customer"]
@@ -60,7 +60,12 @@ def serialize_booking(
 ) -> BookingList:
     booking["id"] = str(booking["_id"])
     booking["created_at"] = format_display_datetime(booking["created_at"])
-    booking["customer_name"] = booking["customer"]["name"]
+    booking["customer_name"] = booking["customer"]["name"]    # if get_presigned_url:
+    #     booking["invoice_url"] = (
+    #         get_presigned_url(booking["invoice_file"])
+    #         if "invoice_file" in booking
+    #         else None
+    #     )
     booking["customer_address"] = booking["customer"]["address"]
     booking["customer_phone_number"] = booking["customer"]["phone_number"]
     booking["items"].sort(key=lambda item: item["date"])
@@ -71,12 +76,12 @@ def serialize_booking(
     ]
     booking["total_expense"] = total_expense
 
-    if get_presigned_url:
-        booking["invoice_url"] = (
-            get_presigned_url(booking["invoice_file"])
-            if "invoice_file" in booking
-            else None
-        )
+    # if get_presigned_url:
+    #     booking["invoice_url"] = (
+    #         get_presigned_url(booking["invoice_file"])
+    #         if "invoice_file" in booking
+    #         else None
+    #     )
 
     del booking["_id"]
     del booking["customer"]
