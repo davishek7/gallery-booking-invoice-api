@@ -8,6 +8,7 @@ from .routes.auth import router as auth_router
 from .routes.contact import router as contact_router
 from .routes.admin_stat import router as admin_stat_router
 from .routes.expense import router as expense_router
+from .routes.search import router as search_router
 from .exceptions.handlers import register_exception_handlers
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -66,3 +67,4 @@ app.include_router(booking_router, prefix=f"{URL_PREFIX}/booking", tags=["Bookin
 app.include_router(expense_router, prefix=f"{URL_PREFIX}/expense", tags=["Expense"])
 app.include_router(gallery_router, prefix=f"{URL_PREFIX}/gallery", tags=["Gallery"])
 app.include_router(contact_router, prefix=f"{URL_PREFIX}/contact", tags=["Contact"])
+app.include_router(search_router, prefix=f"{URL_PREFIX}/search", tags=["Search"])
