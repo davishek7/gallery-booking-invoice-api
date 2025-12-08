@@ -79,7 +79,7 @@ class BookingList(BaseModel):
     customer_name: str
     payments: List[PaymentResponse] = []
     discount: int
-    invoice_url: str | None = None
+    invoice_file: str | None = None
     created_at: str
 
     @computed_field(return_type=int)
@@ -124,7 +124,7 @@ class BookingResponse(BaseModel):
     discount: int
     payments: List[PaymentResponse] = []
     total_expense: int = 0
-    invoice_url: str | None = None
+    invoice_file: str | None = None
     created_at: str
 
     @computed_field(return_type=int)
