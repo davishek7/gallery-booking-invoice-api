@@ -166,3 +166,7 @@ class BookingResponse(BaseModel):
     @property
     def total_revenue(self) -> int:
         return self.final_amount - self.total_expense
+
+
+class BookingSearchResult(BaseModel):
+    booking_id: str

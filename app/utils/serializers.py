@@ -1,11 +1,10 @@
 from cloudinary.utils import cloudinary_url
-from ..schemas.gallery_schema import ImageResponse
-from ..schemas.booking_schema import BookingList, BookingResponse
+from ..schemas.gallery_schema import ImageResponse, ImageSearchResult
+from ..schemas.booking_schema import BookingList, BookingResponse, BookingSearchResult
 from ..schemas.auth_schema import UserResponse
-from ..schemas.contact_schema import ContactResponse
-from ..schemas.expense_schema import ExpenseResponse
+from ..schemas.contact_schema import ContactResponse, ContactSearchResult
+from ..schemas.expense_schema import ExpenseResponse, ExpenseSearchResult
 from ..utils.datetime_formatter import format_display_datetime, format_datetime
-from supabase import Client
 
 
 def serialize_image(image: dict) -> ImageResponse:
@@ -60,7 +59,7 @@ def serialize_booking(
 ) -> BookingList:
     booking["id"] = str(booking["_id"])
     booking["created_at"] = format_display_datetime(booking["created_at"])
-    booking["customer_name"] = booking["customer"]["name"]    # if get_presigned_url:
+    booking["customer_name"] = booking["customer"]["name"]  # if get_presigned_url:
     #     booking["invoice_url"] = (
     #         get_presigned_url(booking["invoice_file"])
     #         if "invoice_file" in booking
@@ -119,3 +118,26 @@ def serialize_expense(expense: dict) -> ExpenseResponse:
     expense["created_at"] = format_display_datetime(expense["created_at"])
     del expense["_id"]
     return ExpenseResponse(**expense)
+
+
+def serialize_search_results(
+    data: dict, search_result_type: str
+) -> (
+    ImageSearchResult | BookingSearchResult | ContactSearchResult | ExpenseSearchResult
+):
+    if data["_id"]:
+        data["id"] = str(data["_id"])
+
+    del data["_id"]
+
+    if search_result_type == "gallery":
+        return ImageSearchResult(**data)
+
+    if search_result_type == "booking":
+        return BookingSearchResult(**data)
+
+    if search_result_type == "contact":
+        return ContactSearchResult(**data)
+
+    if search_result_type == "expense":
+        return ExpenseSearchResult(**data)

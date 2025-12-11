@@ -35,3 +35,8 @@ class ExpenseUpdate(BaseModel):
     remarks: str
     amount: int
     date: datetime
+
+
+class ExpenseSearchResult(BaseModel):
+    id: str
+    booking_id: str
