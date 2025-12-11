@@ -1,12 +1,7 @@
 import re
 from fastapi import status
 from ..utils.responses import success_response
-from ..utils.serializers import (
-    serialize_image,
-    serialize_booking_list,
-    serialize_contact,
-    serialize_expense,
-)
+from ..utils.serializers import serialize_search_results
 
 
 class SearchService:
@@ -52,8 +47,19 @@ class SearchService:
 
         contact_query = {
             "$or": [
-                {contact_field: {"$regex": safe_search_term, "$options": "i"}}
-                for contact_field in contact_fields
+                *[
+                    {contact_field: {"$regex": safe_search_term, "$options": "i"}}
+                    for contact_field in contact_fields
+                ],
+                {
+                    "$expr": {
+                        "$regexMatch": {
+                            "input": {"$toString": "$phone_number"},
+                            "regex": safe_search_term,
+                            "options": "i",
+                        }
+                    }
+                },
             ]
         }
 
@@ -64,19 +70,36 @@ class SearchService:
             ]
         }
 
-        images_cursor = self.gallery_collection.find(gallery_query)
-        images = [serialize_image(doc) async for doc in images_cursor]
+        images_cursor = self.gallery_collection.find(gallery_query, {"_id": 1})
+        images = [
+            serialize_search_results(doc, "gallery") async for doc in images_cursor
+        ]
 
-        bookings_cursor = self.booking_collection.find(booking_query)
-        bookings = [serialize_booking_list(doc) async for doc in bookings_cursor]
+        bookings_cursor = self.booking_collection.find(booking_query, {"booking_id": 1})
+        bookings = [
+            serialize_search_results(doc, "booking") async for doc in bookings_cursor
+        ]
 
-        contacts_cursor = self.contact_collection.find(contact_query)
-        contacts = [serialize_contact(doc) async for doc in contacts_cursor]
+        contacts_cursor = self.contact_collection.find(
+            contact_query, {"name": 1, "_id": 1}
+        )
+        contacts = [
+            serialize_search_results(doc, "contact") async for doc in contacts_cursor
+        ]
 
-        expenses_cursor = self.expense_collection.find(expense_query)
-        expenses = [serialize_expense(doc) async for doc in expenses_cursor]
+        expenses_cursor = self.expense_collection.find(
+            expense_query, {"booking_id": 1, "_id": 1}
+        )
+        expenses = [
+            serialize_search_results(doc, "expense") async for doc in expenses_cursor
+        ]
 
-        data = {"images": images, "bookings": bookings, "contacts": contacts, "expenses": expenses}
+        data = {
+            "images": images,
+            "bookings": bookings,
+            "contacts": contacts,
+            "expenses": expenses,
+        }
 
         return success_response(
             f"Search results for: {search_param}", status.HTTP_200_OK, data=data

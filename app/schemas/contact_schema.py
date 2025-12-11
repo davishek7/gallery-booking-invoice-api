@@ -17,3 +17,8 @@ class ContactResponse(BaseModel):
     message: str
     read_status: bool
     created_at: str
+
+
+class ContactSearchResult(BaseModel):
+    id: str
+    name: str

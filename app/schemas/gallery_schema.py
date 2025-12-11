@@ -13,3 +13,7 @@ class ImageResponse(BaseModel):
     thumb_url: str
     url: str
     created_at: str
+
+
+class ImageSearchResult(BaseModel):
+    id: str
