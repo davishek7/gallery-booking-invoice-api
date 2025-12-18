@@ -134,6 +134,7 @@ def serialize_search_results(
         return ImageSearchResult(**data)
 
     if search_result_type == "booking":
+        data["customer_name"] = data["customer"]["name"]
         return BookingSearchResult(**data)
 
     if search_result_type == "contact":

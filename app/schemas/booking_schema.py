@@ -170,3 +170,4 @@ class BookingResponse(BaseModel):
 
 class BookingSearchResult(BaseModel):
     booking_id: str
+    customer_name: str
