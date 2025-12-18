@@ -41,12 +41,6 @@ class GalleryService:
             total = await self.collection.count_documents({"category": "gallery"})
             cursor = cursor.skip(offset).limit(limit)
         images = [serialize_image(doc) async for doc in cursor]
-        if not images:
-            return success_response(
-                "No image found",
-                status.HTTP_200_OK,
-                data={"images": [], "limit": 0, "total": total},
-            )
         return success_response(
             "Images fetched successfully",
             status.HTTP_200_OK,

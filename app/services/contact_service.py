@@ -39,12 +39,6 @@ class ContactService:
             self.collection.find().skip(offset).limit(limit).sort({"created_at": -1})
         )
         contacts = [serialize_contact(doc) async for doc in cursor]
-        if not contacts:
-            return success_response(
-                "No contacts found",
-                status.HTTP_200_OK,
-                data={"contacts": contacts, "limit": 0, "total": total},
-            )
         return success_response(
             "Contacts fetched successfully",
             status.HTTP_200_OK,

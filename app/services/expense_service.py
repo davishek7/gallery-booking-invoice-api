@@ -26,10 +26,6 @@ class ExpenseService:
         cursor = self.collection.find({}).sort("date", -1)
         docs = await cursor.to_list(length=None)
         expenses = [serialize_expense(doc) for doc in docs]
-        if not expenses:
-            return success_response(
-                "No expenses found", status.HTTP_200_OK, data={"expenses": []}
-            )
         return success_response(
             "Expenses fetched successfully",
             status.HTTP_200_OK,

@@ -4,6 +4,7 @@ from ..schemas.booking_schema import BookingList, BookingResponse, BookingSearch
 from ..schemas.auth_schema import UserResponse
 from ..schemas.contact_schema import ContactResponse, ContactSearchResult
 from ..schemas.expense_schema import ExpenseResponse, ExpenseSearchResult
+from ..schemas.invoice_schema import InvoiceListSchema
 from ..utils.datetime_formatter import format_display_datetime, format_datetime
 
 
@@ -26,9 +27,7 @@ def serialize_image(image: dict) -> ImageResponse:
     return ImageResponse(**image)
 
 
-def serialize_booking_list(
-    booking: dict, total_expense: int = 0, get_presigned_url=None
-) -> BookingList:
+def serialize_booking_list(booking: dict, total_expense: int = 0) -> BookingList:
     booking["id"] = str(booking["_id"])
     booking["created_at"] = format_display_datetime(booking["created_at"])
     booking["customer_name"] = booking["customer"]["name"]
@@ -42,29 +41,15 @@ def serialize_booking_list(
     ]
     booking["total_expense"] = total_expense
 
-    # if get_presigned_url:
-    #     booking["invoice_url"] = (
-    #         get_presigned_url(booking["invoice_file"])
-    #         if "invoice_file" in booking
-    #         else None
-    #     )
-
     del booking["_id"]
     del booking["customer"]
     return BookingList(**booking)
 
 
-def serialize_booking(
-    booking: dict, total_expense: int = 0, get_presigned_url=None
-) -> BookingList:
+def serialize_booking(booking: dict, total_expense: int = 0) -> BookingList:
     booking["id"] = str(booking["_id"])
     booking["created_at"] = format_display_datetime(booking["created_at"])
     booking["customer_name"] = booking["customer"]["name"]  # if get_presigned_url:
-    #     booking["invoice_url"] = (
-    #         get_presigned_url(booking["invoice_file"])
-    #         if "invoice_file" in booking
-    #         else None
-    #     )
     booking["customer_address"] = booking["customer"]["address"]
     booking["customer_phone_number"] = booking["customer"]["phone_number"]
     booking["items"].sort(key=lambda item: item["date"])
@@ -74,13 +59,6 @@ def serialize_booking(
         serialize_payment(payment) for payment in booking["payments"]
     ]
     booking["total_expense"] = total_expense
-
-    # if get_presigned_url:
-    #     booking["invoice_url"] = (
-    #         get_presigned_url(booking["invoice_file"])
-    #         if "invoice_file" in booking
-    #         else None
-    #     )
 
     del booking["_id"]
     del booking["customer"]
@@ -142,3 +120,13 @@ def serialize_search_results(
 
     if search_result_type == "expense":
         return ExpenseSearchResult(**data)
+
+
+def serialize_invoice_list(booking: dict):
+    booking["id"] = str(booking["_id"])
+    booking["customer_name"] = booking["customer"]["name"]
+
+    del booking["_id"]
+    del booking["customer"]
+
+    return InvoiceListSchema(**booking)

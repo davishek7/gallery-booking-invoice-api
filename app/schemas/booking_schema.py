@@ -4,6 +4,11 @@ from datetime import datetime
 from typing import List
 
 
+class BookingView(str, Enum):
+    default = "default"
+    invoice = "invoice"
+
+
 class PaymentType(str, Enum):
     advance = "Advance"
     final = "Final"

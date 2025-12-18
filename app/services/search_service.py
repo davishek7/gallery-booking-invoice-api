@@ -75,7 +75,9 @@ class SearchService:
             serialize_search_results(doc, "gallery") async for doc in images_cursor
         ]
 
-        bookings_cursor = self.booking_collection.find(booking_query, {"booking_id": 1, "customer.name": 1})
+        bookings_cursor = self.booking_collection.find(
+            booking_query, {"booking_id": 1, "customer.name": 1}
+        )
         bookings = [
             serialize_search_results(doc, "booking") async for doc in bookings_cursor
         ]

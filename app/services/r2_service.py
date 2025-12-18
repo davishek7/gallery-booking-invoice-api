@@ -1,4 +1,3 @@
-import os
 import boto3
 import requests
 from botocore.config import Config
@@ -49,7 +48,7 @@ class R2Service:
             {"booking_id": booking_id}
         )
 
-        return serialize_booking(updated_booking, 0, self.get_presigned_url)
+        return serialize_booking(updated_booking, 0)
 
     async def download_invoice(self, booking_id):
         booking = await get_object_or_404(

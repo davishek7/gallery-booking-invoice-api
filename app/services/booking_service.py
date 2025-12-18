@@ -1,4 +1,4 @@
-from fastapi import status, Depends
+from fastapi import status
 from fastapi.responses import StreamingResponse
 from ..schemas.booking_schema import (
     BookingIn,
@@ -6,12 +6,14 @@ from ..schemas.booking_schema import (
     BookingItem,
     PaymentMethod,
     PaymentType,
+    BookingView,
 )
 from ..utils.random_id import generate_booking_id
 from ..utils.serializers import (
     serialize_booking_list,
     serialize_booking,
     serialize_expense,
+    serialize_invoice_list,
 )
 from ..utils.responses import success_response
 from ..exceptions.custom_exception import AppException
@@ -42,20 +44,15 @@ class BookingService:
             data={"booking_id": booking["booking_id"]},
         )
 
-    async def get_list(self, limit: int, offset: int):
+    async def get_list(self, view: BookingView, limit: int, offset: int):
         total = await self.collection.count_documents({})
         pipeline = sort_bookings_by_event_date(skip=offset, limit=limit)
         cursor = await self.collection.aggregate(pipeline)
-        bookings = [
-            serialize_booking_list(booking, self.invoice_service.get_presigned_url)
-            async for booking in cursor
-        ]
-        if not bookings:
-            return success_response(
-                "No bookings found",
-                status.HTTP_200_OK,
-                data={"bookings": [], "limit": limit, "total": total},
-            )
+
+        if view == BookingView.invoice:
+            bookings = [serialize_invoice_list(booking) async for booking in cursor]
+        else:
+            bookings = [serialize_booking_list(booking) async for booking in cursor]
         return success_response(
             "Bookings fetched successfully",
             status.HTTP_200_OK,
@@ -67,7 +64,7 @@ class BookingService:
         if not booking:
             raise AppException("Booking not found", status.HTTP_404_NOT_FOUND)
 
-        total_expenses_count = await self.expense_collection.count_documents(
+        await self.expense_collection.count_documents(
             {"booking_id": booking["booking_id"]}
         )
 
@@ -83,31 +80,27 @@ class BookingService:
             "Booking fetched successfully",
             status.HTTP_200_OK,
             data={
-                "booking": serialize_booking(
-                    booking, total_expense, self.invoice_service.get_presigned_url
-                ),
+                "booking": serialize_booking(booking, total_expense),
                 "expenses": expenses,
             },
         )
 
     async def add_payment(self, booking_id: str, payment_schema: Payment):
         payment_data = payment_schema.model_dump()
-        booking = await self.collection.find_one({"booking_id": booking_id})
-        if not booking:
-            raise AppException("Booking not found", status.HTTP_404_NOT_FOUND)
-        await self.collection.update_one(
+        result = await self.collection.update_one(
             {"booking_id": booking_id}, {"$push": {"payments": payment_data}}
         )
+        if result.matched_count == 0:
+            raise AppException("Booking not found", status.HTTP_404_NOT_FOUND)
         return success_response("New payment added successfully", status.HTTP_200_OK)
 
     async def add_item(self, booking_id: str, item_schema: BookingItem):
         item_data = item_schema.model_dump()
-        booking = await self.collection.find_one({"booking_id": booking_id})
-        if not booking:
-            raise AppException("Booking not found", status.HTTP_404_NOT_FOUND)
-        await self.collection.update_one(
+        result = await self.collection.update_one(
             {"booking_id": booking_id}, {"$push": {"items": item_data}}
         )
+        if result.matched_count == 0:
+            raise AppException("Booking not found", status.HTTP_404_NOT_FOUND)
         return success_response("New item added successfully", status.HTTP_200_OK)
 
     async def delete(self, booking_id: str):
