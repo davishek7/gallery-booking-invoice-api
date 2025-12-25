@@ -1,8 +1,19 @@
 from datetime import datetime
 
 
-def sort_bookings_by_event_date(skip: int, limit: int):
-    return [
+def sort_bookings_by_event_date(
+    skip: int = None, limit: int = None, booking_id: str = None
+):
+    pipeline = [
+        {
+            "$lookup": {
+                "from": "expense",
+                "localField": "booking_id",
+                "foreignField": "booking_id",
+                "as": "expenses",
+            }
+        },
+        {"$addFields": {"total_expense": {"$sum": "$expenses.amount"}}},
         {
             "$addFields": {
                 "sortDate": {"$min": "$items.date"}  # earliest event date
@@ -14,6 +25,25 @@ def sort_bookings_by_event_date(skip: int, limit: int):
             }
         },
         {"$sort": {"isCompleted": 1, "sortDate": 1}},
-        {"$skip": skip},
-        {"$limit": limit},
+    ]
+    if skip:
+        pipeline.append({"$skip": skip})
+    if limit:
+        pipeline.append({"$limit": limit})
+    if booking_id:
+        pipeline.append({"$match": {"booking_id": booking_id}})
+    return pipeline
+
+
+def group_payments_by_year():
+    return [
+        {"$unwind": "$payments"},
+        {
+            "$group": {
+                "_id": {"$year": "$payments.date"},
+                "total_income": {"$sum": "$payments.amount"},
+                "payments_count": {"$sum": 1},
+            }
+        },
+        {"$sort": {"_id": -1}},
     ]

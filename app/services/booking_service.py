@@ -12,12 +12,12 @@ from ..utils.random_id import generate_booking_id
 from ..utils.serializers import (
     serialize_booking_list,
     serialize_booking,
-    serialize_expense,
     serialize_invoice_list,
 )
 from ..utils.responses import success_response
 from ..exceptions.custom_exception import AppException
 from ..utils.aggregate_pipelines import sort_bookings_by_event_date
+from ..utils.shortcuts import get_object_or_404
 
 
 class BookingService:
@@ -60,38 +60,40 @@ class BookingService:
         )
 
     async def get(self, booking_id: str):
-        booking = await self.collection.find_one({"booking_id": booking_id})
+        pipeline = sort_bookings_by_event_date(booking_id=booking_id)
+        cursor = await self.collection.aggregate(pipeline)
+        booking = await cursor.to_list(length=1)
         if not booking:
             raise AppException("Booking not found", status.HTTP_404_NOT_FOUND)
-
-        await self.expense_collection.count_documents(
-            {"booking_id": booking["booking_id"]}
-        )
-
-        expense_cursor = self.expense_collection.find(
-            {"booking_id": booking["booking_id"]}
-        )
-
-        expenses = [serialize_expense(doc) async for doc in expense_cursor]
-
-        total_expense = sum(_.amount for _ in expenses)
 
         return success_response(
             "Booking fetched successfully",
             status.HTTP_200_OK,
-            data={
-                "booking": serialize_booking(booking, total_expense),
-                "expenses": expenses,
-            },
+            data=serialize_booking(booking[0]),
         )
 
     async def add_payment(self, booking_id: str, payment_schema: Payment):
+        await get_object_or_404(self.collection, {"booking_id": booking_id})
         payment_data = payment_schema.model_dump()
         result = await self.collection.update_one(
-            {"booking_id": booking_id}, {"$push": {"payments": payment_data}}
+            {
+                "booking_id": booking_id,
+                "$expr": {
+                    "$lte": [
+                        {
+                            "$add": [
+                                {"$sum": "$payments.amount"},
+                                payment_data["amount"],
+                            ]
+                        },
+                        {"$subtract": [{"$sum": "$items.rate"}, "$discount"]},
+                    ]
+                },
+            },
+            {"$push": {"payments": payment_data}},
         )
-        if result.matched_count == 0:
-            raise AppException("Booking not found", status.HTTP_404_NOT_FOUND)
+        if result.modified_count == 0:
+            raise AppException("Payment exceeds final booking amount", status.HTTP_400_BAD_REQUEST)
         return success_response("New payment added successfully", status.HTTP_200_OK)
 
     async def add_item(self, booking_id: str, item_schema: BookingItem):
