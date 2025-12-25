@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field, computed_field
 from enum import Enum
 from datetime import datetime
 from typing import List
+from .expense_schema import ExpenseResponse
 
 
 class BookingView(str, Enum):
@@ -128,7 +129,8 @@ class BookingResponse(BaseModel):
     advance: int
     discount: int
     payments: List[PaymentResponse] = []
-    total_expense: int = 0
+    expenses: List[ExpenseResponse] = []
+    total_expense: int
     invoice_file: str | None = None
     created_at: str
 

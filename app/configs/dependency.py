@@ -4,7 +4,7 @@ from ..services.cloudinary_service import CloudinaryService
 from ..services.booking_service import BookingService
 from ..services.auth_service import AuthService
 from ..services.contact_service import ContactService
-from ..services.admin_stat_service import AdminStatService
+from ..services.stat_service import StatService
 from ..services.supabase_service import SupabaseService
 from ..services.r2_service import R2Service
 from ..services.expense_service import ExpenseService
@@ -52,9 +52,9 @@ async def get_expense_service() -> ExpenseService:
     return ExpenseService(db["expense"], db["booking"])
 
 
-async def get_admin_stat_service() -> AdminStatService:
+async def get_stat_service() -> StatService:
     db = get_db()
-    return AdminStatService(db["gallery"], db["booking"], db["contact"], db["expense"])
+    return StatService(db["gallery"], db["booking"], db["contact"], db["expense"])
 
 
 async def get_search_service() -> SearchService:

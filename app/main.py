@@ -7,7 +7,7 @@ from .routes.booking import router as booking_router
 from .routes.invoice import router as invoice_router
 from .routes.auth import router as auth_router
 from .routes.contact import router as contact_router
-from .routes.admin_stat import router as admin_stat_router
+from .routes.stat import router as stat_router
 from .routes.expense import router as expense_router
 from .routes.search import router as search_router
 from .exceptions.handlers import register_exception_handlers
@@ -63,7 +63,7 @@ async def home_page(request: Request):
 URL_PREFIX = "/api"
 
 app.include_router(auth_router, prefix=f"{URL_PREFIX}/auth", tags=["Auth"])
-app.include_router(admin_stat_router, prefix=f"{URL_PREFIX}/admin", tags=["Stats"])
+app.include_router(stat_router, prefix=f"{URL_PREFIX}/stats", tags=["Stats"])
 app.include_router(booking_router, prefix=f"{URL_PREFIX}/booking", tags=["Booking"])
 app.include_router(invoice_router, prefix=f"{URL_PREFIX}/invoice", tags=["Invoice"])
 app.include_router(expense_router, prefix=f"{URL_PREFIX}/expense", tags=["Expense"])

@@ -27,7 +27,7 @@ def serialize_image(image: dict) -> ImageResponse:
     return ImageResponse(**image)
 
 
-def serialize_booking_list(booking: dict, total_expense: int = 0) -> BookingList:
+def serialize_booking_list(booking: dict) -> BookingList:
     booking["id"] = str(booking["_id"])
     booking["created_at"] = format_display_datetime(booking["created_at"])
     booking["customer_name"] = booking["customer"]["name"]
@@ -39,14 +39,13 @@ def serialize_booking_list(booking: dict, total_expense: int = 0) -> BookingList
     booking["payments"] = [
         serialize_payment(payment) for payment in booking["payments"]
     ]
-    booking["total_expense"] = total_expense
 
     del booking["_id"]
     del booking["customer"]
     return BookingList(**booking)
 
 
-def serialize_booking(booking: dict, total_expense: int = 0) -> BookingList:
+def serialize_booking(booking: dict) -> BookingResponse:
     booking["id"] = str(booking["_id"])
     booking["created_at"] = format_display_datetime(booking["created_at"])
     booking["customer_name"] = booking["customer"]["name"]  # if get_presigned_url:
@@ -58,7 +57,9 @@ def serialize_booking(booking: dict, total_expense: int = 0) -> BookingList:
     booking["payments"] = [
         serialize_payment(payment) for payment in booking["payments"]
     ]
-    booking["total_expense"] = total_expense
+    booking["expenses"] = [
+        serialize_expense(expense) for expense in booking["expenses"]
+    ]
 
     del booking["_id"]
     del booking["customer"]
