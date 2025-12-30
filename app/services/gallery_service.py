@@ -15,15 +15,17 @@ class GalleryService:
         self.MAX_SIZE = 10 * 1024 * 1024  # 10MB
 
     async def create(self, category, files):
+        skipped_files = []
+        uploaded_count = 0
         for file in files:
             content = await file.read()
             file_size = len(content)
             if file_size > self.MAX_SIZE:
-                return AppException(
-                    "File size too large (>10MB)", status.HTTP_400_BAD_REQUEST
-                )
+                skipped_files.append(file.filename)
+                continue
 
             result = await self.cloudinary_service.upload(content)
+            uploaded_count += 1
 
             photo_doc = {
                 "category": category,
@@ -32,6 +34,20 @@ class GalleryService:
                 "created_at": datetime.now(),
             }
             await self.collection.insert_one(photo_doc)
+        if uploaded_count == 0:
+            raise AppException(
+                "No images were uploaded. All files exceed the size limit (10MB).",
+                status.HTTP_400_BAD_REQUEST,
+            )
+        if skipped_files:
+            return success_response(
+                "Some images were uploaded successfully",
+                status.HTTP_201_CREATED,
+                data={
+                    "uploaded": uploaded_count,
+                    "skipped_files": skipped_files,
+                },
+            )
         return success_response("Images upload successfully", status.HTTP_201_CREATED)
 
     async def get_list(self, limit: int, offset: int, category: ImageCategory = None):
