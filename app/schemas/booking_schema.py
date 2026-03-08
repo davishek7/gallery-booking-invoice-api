@@ -11,11 +11,6 @@ from app.enums.booking_enums import (
 )
 
 
-# -------------------------
-# Payment Schemas
-# -------------------------
-
-
 class Payment(BaseModel):
     amount: int
     method: PaymentMethod
@@ -28,11 +23,6 @@ class PaymentResponse(BaseModel):
     method: PaymentMethod
     payment_type: PaymentType
     date: str
-
-
-# -------------------------
-# Booking Item Schemas
-# -------------------------
 
 
 class BookingItem(BaseModel):
@@ -49,20 +39,10 @@ class BookingItemResponse(BaseModel):
     date: str
 
 
-# -------------------------
-# Customer
-# -------------------------
-
-
 class CustomerDetails(BaseModel):
     name: str
     address: str
     phone_number: str
-
-
-# -------------------------
-# Booking Input
-# -------------------------
 
 
 class BookingIn(BaseModel):
@@ -77,11 +57,6 @@ class BookingIn(BaseModel):
 
     invoice_file: Optional[str] = None
     created_at: datetime = Field(default_factory=datetime.now)
-
-
-# -------------------------
-# Shared Computed Fields
-# -------------------------
 
 
 class BookingComputed(BaseModel):
@@ -119,11 +94,6 @@ class BookingComputed(BaseModel):
         return self.items[0].date
 
 
-# -------------------------
-# Booking List
-# -------------------------
-
-
 class BookingList(BookingComputed):
     id: str
     booking_id: str
@@ -132,11 +102,6 @@ class BookingList(BookingComputed):
 
     invoice_file: Optional[str] = None
     created_at: str
-
-
-# -------------------------
-# Booking Detail
-# -------------------------
 
 
 class BookingResponse(BookingComputed):
@@ -164,11 +129,6 @@ class BookingResponse(BookingComputed):
     @property
     def total_revenue(self) -> int:
         return self.final_amount - self.total_expense
-
-
-# -------------------------
-# Booking Search
-# -------------------------
 
 
 class BookingSearchResult(BaseModel):
