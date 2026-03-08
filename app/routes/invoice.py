@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, Security, Query, UploadFile, Form, File
-from ..schemas.booking_schema import BookingView
-from ..configs.dependency import get_booking_service
+from app.enums.booking_enums import BookingView
+from app.configs.dependency import get_booking_service
 from fastapi_jwt import JwtAuthorizationCredentials
-from ..utils.auth import access_security
+from app.security.jwt import access_security
 
 
 router = APIRouter()

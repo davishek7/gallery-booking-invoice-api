@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
-from .db import connect_to_mongo, close_mongo_connection
-from .cloudinary_config import init_cloudinary
+from app.configs.db import connect_to_mongo, close_mongo_connection
+from app.configs.cloudinary_config import init_cloudinary
 
 
 @asynccontextmanager

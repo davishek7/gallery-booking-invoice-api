@@ -1,14 +1,14 @@
-from ..configs.db import get_db
-from ..services.gallery_service import GalleryService
-from ..services.cloudinary_service import CloudinaryService
-from ..services.booking_service import BookingService
-from ..services.auth_service import AuthService
-from ..services.contact_service import ContactService
-from ..services.stat_service import StatService
-from ..services.supabase_service import SupabaseService
-from ..services.r2_service import R2Service
-from ..services.expense_service import ExpenseService
-from ..services.search_service import SearchService
+from app.configs.db import get_db
+from app.services.gallery_service import GalleryService
+from app.services.cloudinary_service import CloudinaryService
+from app.services.booking_service import BookingService
+from app.services.auth_service import AuthService
+from app.services.contact_service import ContactService
+from app.services.stat_service import StatService
+from app.services.supabase_service import SupabaseService
+from app.services.r2_service import R2Service
+from app.services.expense_service import ExpenseService
+from app.services.search_service import SearchService
 
 
 async def get_cloudinary_service() -> CloudinaryService:

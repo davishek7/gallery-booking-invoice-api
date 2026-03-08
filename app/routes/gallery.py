@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, Form, UploadFile, File, Security, Query
 from typing import List
-from ..configs.dependency import get_gallery_service
-from ..schemas.gallery_schema import ImageCategory
+from app.configs.dependency import get_gallery_service
+from app.enums.gallery_enums import ImageCategory
 from fastapi_jwt import JwtAuthorizationCredentials  # type: ignore
-from ..utils.auth import access_security
+from app.security.jwt import access_security
 
 
 router = APIRouter()

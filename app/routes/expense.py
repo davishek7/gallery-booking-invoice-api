@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, Security
 from fastapi_jwt import JwtAuthorizationCredentials
-from ..schemas.expense_schema import ExpenseIn, ExpenseUpdate
-from ..configs.dependency import get_expense_service
-from ..utils.auth import access_security
+from app.schemas.expense_schema import ExpenseIn, ExpenseUpdate
+from app.configs.dependency import get_expense_service
+from app.security.jwt import access_security
 
 
 router = APIRouter()

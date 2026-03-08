@@ -1,6 +1,6 @@
 import asyncio
-from ..signals.send_email_signal import send_email_signal
-from ..utils.mail import send_email_async
+from app.signals.send_email_signal import send_email_signal
+from app.utils.mail import send_email_async
 
 
 @send_email_signal.connect

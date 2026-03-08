@@ -1,6 +1,6 @@
 from fastapi import status
 from pymongo.collection import Collection
-from ..exceptions.custom_exception import AppException
+from app.exceptions.custom_exception import AppException
 
 
 async def get_object_or_404(collection: Collection, query: dict):

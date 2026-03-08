@@ -1,11 +1,12 @@
 from fastapi import status
 from pydantic import EmailStr
 from bson import ObjectId  # type: ignore
-from ..schemas.auth_schema import LoginSchema, RegisterSchma
-from ..utils.auth import hash_password, verify_password, generate_auth_tokens
-from ..exceptions.custom_exception import AppException
-from ..utils.serializers import serialize_user
-from ..utils.responses import success_response
+from app.schemas.auth_schema import LoginSchema, RegisterSchma
+from app.security.password import hash_password, verify_password
+from app.security.jwt import generate_auth_tokens
+from app.exceptions.custom_exception import AppException
+from app.serializers.user_serializer import serialize_user
+from app.utils.responses import success_response
 
 
 class AuthService:

@@ -1,21 +1,21 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
-from .configs.context_manager import lifespan
-from .routes.gallery import router as gallery_router
-from .routes.booking import router as booking_router
-from .routes.invoice import router as invoice_router
-from .routes.auth import router as auth_router
-from .routes.contact import router as contact_router
-from .routes.stat import router as stat_router
-from .routes.expense import router as expense_router
-from .routes.search import router as search_router
-from .exceptions.handlers import register_exception_handlers
+from app.configs.context_manager import lifespan
+from app.routes.gallery import router as gallery_router
+from app.routes.booking import router as booking_router
+from app.routes.invoice import router as invoice_router
+from app.routes.auth import router as auth_router
+from app.routes.contact import router as contact_router
+from app.routes.stat import router as stat_router
+from app.routes.expense import router as expense_router
+from app.routes.search import router as search_router
+from app.exceptions.handlers import register_exception_handlers
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from .configs.settings import settings
-from .listeners import send_email_listener  # noqa
+from app.configs.settings import settings
+from app.listeners import send_email_listener  # noqa
 
 
 app = FastAPI(

@@ -1,7 +1,7 @@
 import re
 from fastapi import status
-from ..utils.responses import success_response
-from ..utils.serializers import serialize_search_results
+from app.utils.responses import success_response
+from app.serializers.search_serializer import serialize_search_results
 
 
 class SearchService:
