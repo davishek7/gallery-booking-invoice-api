@@ -48,7 +48,7 @@ class R2Service:
             {"booking_id": booking_id}
         )
 
-        return serialize_booking(updated_booking, 0)
+        return serialize_booking(updated_booking)
 
     async def download_invoice(self, booking_id):
         booking = await get_object_or_404(

@@ -29,7 +29,7 @@ class BookingService:
     async def create(self, booking_schema: BookingIn):
         booking = booking_schema.model_dump()
         booking["booking_id"] = generate_booking_id()
-        if booking["advance"] > 0:
+        if booking["advance"] > 0 and booking["advance_date"] != "":
             payment = Payment(
                 amount=booking["advance"],
                 method=PaymentMethod.upi,
@@ -93,7 +93,9 @@ class BookingService:
             {"$push": {"payments": payment_data}},
         )
         if result.modified_count == 0:
-            raise AppException("Payment exceeds final booking amount", status.HTTP_400_BAD_REQUEST)
+            raise AppException(
+                "Payment exceeds final booking amount", status.HTTP_400_BAD_REQUEST
+            )
         return success_response("New payment added successfully", status.HTTP_200_OK)
 
     async def add_item(self, booking_id: str, item_schema: BookingItem):
