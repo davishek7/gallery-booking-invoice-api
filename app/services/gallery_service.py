@@ -48,7 +48,7 @@ class GalleryService:
                     "skipped_files": skipped_files,
                 },
             )
-        return success_response("Images upload successfully", status.HTTP_201_CREATED)
+        return success_response("Images uploaded successfully", status.HTTP_201_CREATED)
 
     async def get_list(self, limit: int, offset: int, category: ImageCategory = None):
         query = {"category": category} if category is not None else {}

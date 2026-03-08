@@ -72,9 +72,10 @@ class BookingIn(BaseModel):
     items: List[BookingItem]
     customer: CustomerDetails
     advance: int = 0
-    advance_date: datetime
+    advance_date: datetime | str = None
     discount: int = 0
     payments: List[Payment] = []
+    invoice_file: str = None
     created_at: datetime = Field(default_factory=datetime.now)
 
 

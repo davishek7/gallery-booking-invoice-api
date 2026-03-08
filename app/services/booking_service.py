@@ -29,7 +29,7 @@ class BookingService:
     async def create(self, booking_schema: BookingIn):
         booking = booking_schema.model_dump()
         booking["booking_id"] = generate_booking_id()
-        if booking["advance"] > 0:
+        if booking["advance"] > 0 and booking["advance_date"] != "":
             payment = Payment(
                 amount=booking["advance"],
                 method=PaymentMethod.upi,
