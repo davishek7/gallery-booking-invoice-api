@@ -1,11 +1,11 @@
 from fastapi import status
 from bson import ObjectId  # type: ignore
 from datetime import datetime
-from ..services.cloudinary_service import CloudinaryService
-from ..utils.serializers import serialize_image
-from ..utils.responses import success_response
-from ..schemas.gallery_schema import ImageCategory
-from ..exceptions.custom_exception import AppException
+from app.services.cloudinary_service import CloudinaryService
+from app.serializers.gallery_serializer import serialize_image
+from app.utils.responses import success_response
+from app.enums.gallery_enums import ImageCategory
+from app.exceptions.custom_exception import AppException
 
 
 class GalleryService:

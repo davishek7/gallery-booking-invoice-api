@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, Security
-from fastapi_jwt import JwtAuthorizationCredentials  # type: ignore
-from ..schemas.auth_schema import LoginSchema, RegisterSchma
-from ..configs.dependency import get_auth_service
-from ..utils.auth import access_security, refresh_security
-from ..configs.settings import settings
+from fastapi_jwt import JwtAuthorizationCredentials
+from app.schemas.auth_schema import LoginSchema, RegisterSchma
+from app.configs.dependency import get_auth_service
+from app.security.jwt import access_security, refresh_security
+from app.configs.settings import settings
 
 
 router = APIRouter()

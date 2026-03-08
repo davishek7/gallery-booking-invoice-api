@@ -1,8 +1,8 @@
 import os
 from supabase import create_client, Client
-from ..configs.settings import settings
-from ..utils.shortcuts import get_object_or_404
-from ..utils.serializers import serialize_booking
+from app.configs.settings import settings
+from app.utils.shortcuts import get_object_or_404
+from app.serializers.booking_serializer import serialize_booking
 
 
 class SupabaseService:

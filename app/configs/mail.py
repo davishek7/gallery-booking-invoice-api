@@ -1,5 +1,5 @@
 from fastapi_mail import ConnectionConfig  # type: ignore
-from ..configs.settings import settings
+from app.configs.settings import settings
 
 
 conf = ConnectionConfig(

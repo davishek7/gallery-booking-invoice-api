@@ -1,11 +1,11 @@
 from fastapi import status
 from bson import ObjectId
 from datetime import datetime
-from ..schemas.expense_schema import ExpenseIn, ExpenseUpdate
-from ..utils.responses import success_response
-from ..utils.shortcuts import get_object_or_404
-from ..utils.serializers import serialize_expense
-from ..exceptions.custom_exception import AppException
+from app.schemas.expense_schema import ExpenseIn, ExpenseUpdate
+from app.utils.responses import success_response
+from app.utils.shortcuts import get_object_or_404
+from app.serializers.expense_serializer import serialize_expense
+from app.exceptions.custom_exception import AppException
 
 
 class ExpenseService:

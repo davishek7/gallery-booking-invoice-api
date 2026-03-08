@@ -2,7 +2,7 @@ from fastapi_mail import MessageSchema, FastMail  # type: ignore
 from fastapi.templating import Jinja2Templates
 from pydantic import EmailStr
 from typing import List
-from ..configs.mail import conf
+from app.configs.mail import conf
 
 
 templates = Jinja2Templates(directory="app/templates")

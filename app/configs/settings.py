@@ -1,5 +1,5 @@
 import os
-from pydantic_settings import BaseSettings, SettingsConfigDict  # type: ignore
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class GeneralSettings(BaseSettings):

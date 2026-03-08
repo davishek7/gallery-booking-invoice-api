@@ -1,11 +1,6 @@
 from pydantic import BaseModel, Field
-from enum import Enum
 from datetime import datetime
-
-
-class ExpenseType(str, Enum):
-    helper_expense = "Helper Expense"
-    others = "Others"
+from app.enums.expense_enums import ExpenseType
 
 
 class ExpenseIn(BaseModel):

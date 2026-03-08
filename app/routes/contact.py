@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, Security, Query
-from ..schemas.contact_schema import ContactIn
-from ..configs.dependency import get_contact_service
-from ..utils.auth import access_security
-from fastapi_jwt import JwtAuthorizationCredentials  # type: ignore
+from app.schemas.contact_schema import ContactIn
+from app.configs.dependency import get_contact_service
+from app.security.jwt import access_security
+from fastapi_jwt import JwtAuthorizationCredentials
 
 router = APIRouter()
 

@@ -1,6 +1,6 @@
 from zoneinfo import ZoneInfo
 from datetime import datetime
-from ..configs.settings import settings
+from app.configs.settings import settings
 
 
 def format_display_datetime(created_at: datetime) -> str:

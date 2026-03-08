@@ -1,5 +1,5 @@
-from pymongo import AsyncMongoClient  # type: ignore
-from .settings import settings
+from pymongo import AsyncMongoClient
+from app.configs.settings import settings
 
 client: AsyncMongoClient | None = None
 

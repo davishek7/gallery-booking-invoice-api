@@ -2,8 +2,8 @@ from fastapi import Request, status
 from fastapi.exceptions import RequestValidationError, HTTPException
 from pymongo.errors import DuplicateKeyError
 from cloudinary.exceptions import Error as CloudinaryError
-from ..utils.responses import error_response
-from .custom_exception import AppException
+from app.utils.responses import error_response
+from app.exceptions.custom_exception import AppException
 
 
 def register_exception_handlers(app):

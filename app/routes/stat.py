@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Security
 from fastapi_jwt import JwtAuthorizationCredentials  # type: ignore
-from ..configs.dependency import get_stat_service
-from ..utils.auth import access_security
+from app.configs.dependency import get_stat_service
+from app.security.jwt import access_security
 
 
 router = APIRouter()

@@ -1,10 +1,7 @@
 from fastapi import status
-from ..utils.responses import success_response
-from ..utils.serializers import serialize_booking
-from ..utils.aggregate_pipelines import (
-    group_payments_by_year,
-    sort_bookings_by_event_date,
-)
+from app.utils.responses import success_response
+from app.serializers.booking_serializer import serialize_booking
+from app.utils.aggregate_pipelines import sort_bookings_by_event_date, group_payments_by_year
 
 
 class StatService:
@@ -27,29 +24,33 @@ class StatService:
         bookings_cursor = await self.booking_collection.aggregate(
             sort_bookings_by_event_date()
         )
-        bookings_total_revenue = 0
-        booking_total_received = 0
-        bookings_total_due = 0
-        booking_total_expenses = 0
+
+        total_revenue = 0
+        total_received = 0
+        total_due = 0
+        total_expenses = 0
 
         async for doc in bookings_cursor:
             booking = serialize_booking(doc)
-            bookings_total_revenue += booking.total_revenue - booking.total_expense
-            booking_total_received += booking.paid_amount - booking.total_expense
-            bookings_total_due += booking.due_amount
-            booking_total_expenses += booking.total_expense
+
+            total_revenue += booking.total_revenue
+            total_received += booking.paid_amount
+            total_due += booking.due_amount
+            total_expenses += booking.total_expense
 
         data = {
             "total_images": total_images,
             "total_bookings": total_bookings,
-            "total_revenue": bookings_total_revenue,
-            "total_received": booking_total_received - booking_total_expenses,
-            "total_due": bookings_total_due,
-            "total_expenses": booking_total_expenses,
+            "total_revenue": total_revenue,
+            "total_received": total_received,
+            "total_due": total_due,
+            "total_expenses": total_expenses,
         }
 
         return success_response(
-            "Stats fetched successfully", status.HTTP_200_OK, data=data
+            "Stats fetched successfully",
+            status.HTTP_200_OK,
+            data=data,
         )
 
     async def get_yearly_income(self):

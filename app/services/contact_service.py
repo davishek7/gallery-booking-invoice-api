@@ -1,11 +1,11 @@
 from fastapi import status
 from bson import ObjectId  # type: ignore
-from ..schemas.contact_schema import ContactIn
-from ..utils.responses import success_response
-from ..utils.serializers import serialize_contact
-from ..signals.send_email_signal import send_email_signal
-from ..configs.settings import settings
-from ..exceptions.custom_exception import AppException
+from app.schemas.contact_schema import ContactIn
+from app.utils.responses import success_response
+from app.serializers.contact_serializer import serialize_contact
+from app.signals.send_email_signal import send_email_signal
+from app.configs.settings import settings
+from app.exceptions.custom_exception import AppException
 
 
 class ContactService:

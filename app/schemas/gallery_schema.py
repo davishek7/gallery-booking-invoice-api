@@ -1,10 +1,4 @@
 from pydantic import BaseModel
-from enum import Enum
-
-
-class ImageCategory(str, Enum):
-    hero = "hero"
-    gallery = "gallery"
 
 
 class ImageResponse(BaseModel):

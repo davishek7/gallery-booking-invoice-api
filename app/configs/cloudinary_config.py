@@ -1,5 +1,5 @@
-import cloudinary  # type: ignore
-from .settings import settings
+import cloudinary
+from app.configs.settings import settings
 
 
 def init_cloudinary():
