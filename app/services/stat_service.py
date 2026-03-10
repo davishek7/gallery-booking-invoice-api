@@ -1,7 +1,10 @@
 from fastapi import status
 from app.utils.responses import success_response
 from app.serializers.booking_serializer import serialize_booking
-from app.utils.aggregate_pipelines import sort_bookings_by_event_date, group_payments_by_year
+from app.utils.aggregate_pipelines import (
+    sort_bookings_by_event_date,
+    group_payments_by_year,
+)
 
 
 class StatService:

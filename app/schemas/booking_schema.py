@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, computed_field
+from pydantic import BaseModel, Field, computed_field, constr
 from datetime import datetime
 from typing import List, Optional
 
@@ -42,7 +42,7 @@ class BookingItemResponse(BaseModel):
 class CustomerDetails(BaseModel):
     name: str
     address: str
-    phone_number: str
+    phone_number: constr(min_length=10, max_length=15)
 
 
 class BookingIn(BaseModel):

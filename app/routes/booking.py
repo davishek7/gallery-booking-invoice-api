@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Security, Query
 from fastapi_jwt import JwtAuthorizationCredentials
 from app.configs.dependency import get_booking_service
-from app.schemas.booking_schema import BookingIn, Payment, BookingItem
+from app.schemas.booking_schema import BookingIn, Payment, BookingItem, CustomerDetails
 from app.security.jwt import access_security
 from app.enums.booking_enums import BookingView
 
@@ -36,6 +36,16 @@ async def get_booking(
     credentials: JwtAuthorizationCredentials = Security(access_security),
 ):
     return await booking_service.get(booking_id)
+
+
+@router.patch("/{booking_id}/customer")
+async def edit_customer(
+    booking_id: str,
+    customer_schema: CustomerDetails,
+    booking_service=Depends(get_booking_service),
+    credentials: JwtAuthorizationCredentials = Security(access_security),
+):
+    return await booking_service.edit_customer(booking_id, customer_schema)
 
 
 @router.patch("/{booking_id}/payment")

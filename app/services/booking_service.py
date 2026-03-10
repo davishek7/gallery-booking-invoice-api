@@ -6,6 +6,7 @@ from app.schemas.booking_schema import (
     BookingItem,
     PaymentMethod,
     PaymentType,
+    CustomerDetails,
 )
 from app.utils.random_id import generate_booking_id
 from app.serializers.booking_serializer import (
@@ -70,6 +71,21 @@ class BookingService:
             "Booking fetched successfully",
             status.HTTP_200_OK,
             data=serialize_booking(booking[0]),
+        )
+
+    async def edit_customer(self, booking_id: str, customer_schema: CustomerDetails):
+        customer_data = customer_schema.model_dump()
+        result = await self.collection.update_one(
+            {"booking_id": booking_id}, {"$set": {"customer": customer_data}}
+        )
+        if result.matched_count == 0:
+            raise AppException("Booking not found", status.HTTP_404_NOT_FOUND)
+
+        if result.modified_count == 0:
+            return success_response("No changes detected", status.HTTP_200_OK)
+        
+        return success_response(
+            "Customer details updated successfully", status.HTTP_200_OK
         )
 
     async def add_payment(self, booking_id: str, payment_schema: Payment):
