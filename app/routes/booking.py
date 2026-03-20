@@ -75,11 +75,3 @@ async def delete(
     credentials: JwtAuthorizationCredentials = Security(access_security),
 ):
     return await booking_service.delete(booking_id)
-
-
-@router.get("/booking-id/list")
-async def get_booking_id_list(
-    booking_service=Depends(get_booking_service),
-    credentials: JwtAuthorizationCredentials = Security(access_security),
-):
-    return await booking_service.booking_id_list()

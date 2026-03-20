@@ -13,12 +13,11 @@ class ExpenseService:
         self.collection = collection
         self.booking_collection = booking_collection
 
-    async def create(self, expense_schema: ExpenseIn):
+    async def create(self, booking_id: str, expense_schema: ExpenseIn):
         expense = expense_schema.model_dump()
+        expense.update({"booking_id": booking_id})
         expense["created_at"] = datetime.now()
-        await get_object_or_404(
-            self.booking_collection, {"booking_id": expense["booking_id"]}
-        )
+        await get_object_or_404(self.booking_collection, {"booking_id": booking_id})
         await self.collection.insert_one(expense)
         return success_response("Expense added successfully.", status.HTTP_201_CREATED)
 
@@ -42,11 +41,9 @@ class ExpenseService:
             data=serialize_expense(expense),
         )
 
-    async def update(self, expense_schema: ExpenseUpdate):
+    async def update(self, expense_id: str, expense_schema: ExpenseUpdate):
         updated_expense = expense_schema.model_dump()
-        expense = await self.collection.find_one(
-            {"_id": ObjectId(updated_expense["id"])}
-        )
+        expense = await self.collection.find_one({"_id": ObjectId(expense_id)})
 
         if not expense:
             raise AppException("Expense not found.", status.HTTP_404_NOT_FOUND)

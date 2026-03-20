@@ -83,7 +83,7 @@ class BookingService:
 
         if result.modified_count == 0:
             return success_response("No changes detected", status.HTTP_200_OK)
-        
+
         return success_response(
             "Customer details updated successfully", status.HTTP_200_OK
         )
@@ -127,8 +127,17 @@ class BookingService:
         booking = await self.collection.find_one({"booking_id": booking_id})
         if not booking:
             raise AppException("Booking not found", status.HTTP_404_NOT_FOUND)
+        serialized_booking = serialize_booking(booking)
+        if serialized_booking.payment_status == "Fully Paid":
+            raise AppException(
+                "Cannot delete a fully paid booking",
+                status.HTTP_400_BAD_REQUEST,
+            )
+        await self.expense_collection.delete_many({"booking_id": booking_id})
         await self.collection.delete_one({"booking_id": booking_id})
-        return success_response("Booking deleted successfully", status.HTTP_200_OK)
+        return success_response(
+            "Booking and related expenses deleted successfully", status.HTTP_200_OK
+        )
 
     async def upload_invoice(self, booking_id, file):
         data = await self.invoice_service.upload_invoice(booking_id, file)
@@ -146,16 +155,4 @@ class BookingService:
             headers={
                 "Content-Disposition": f'attachment; filename="{result["filename"]}"'
             },
-        )
-
-    async def booking_id_list(self):
-        cursor = self.collection.find(
-            {}, {"booking_id": 1, "customer.name": 1, "_id": 0}
-        ).sort("created_at", -1)
-        bookings = [
-            {"booking_id": doc["booking_id"], "customer_name": doc["customer"]["name"]}
-            async for doc in cursor
-        ]
-        return success_response(
-            "Booking IDs fetched successfully", status.HTTP_200_OK, data=bookings
         )

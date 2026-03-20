@@ -4,7 +4,6 @@ from app.enums.expense_enums import ExpenseType
 
 
 class ExpenseIn(BaseModel):
-    booking_id: str
     expense_type: ExpenseType
     amount: int
     remarks: str
@@ -24,12 +23,10 @@ class ExpenseResponse(BaseModel):
 
 
 class ExpenseUpdate(BaseModel):
-    id: str
-    booking_id: str
-    expense_type: str
-    remarks: str
-    amount: int
-    date: datetime
+    expense_type: str | None = None
+    remarks: str | None = None
+    amount: int | None = None
+    date: datetime | None = None
 
 
 class ExpenseSearchResult(BaseModel):
