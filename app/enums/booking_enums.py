@@ -28,3 +28,5 @@ class BookingItemCategory(str, Enum):
     reception = "Reception"
     haldi = "Haldi"
     party = "Party"
+    briddhi = "Briddhi"
+    aiburobhat = "Aiburobhat"
